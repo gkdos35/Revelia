@@ -32,25 +32,10 @@ struct RootView: View {
     /// the square campaign.
     @State private var wasShowingHex: Bool = false
 
-    /// Non-nil while the guided L1 tutorial is active.
-    /// Created fresh each time the player taps Tutorial on the home screen.
-    @State private var tutorialManager: TutorialManager? = nil
-
     var body: some View {
         if showingHome {
             // Home screen — shown on every launch; player must tap Play to proceed.
-            WelcomeView(
-                onComplete: { showingHome = false },
-                onTutorial: {
-                    tutorialManager = TutorialManager()
-                    showingHome     = false
-                }
-            )
-        } else if let mgr = tutorialManager {
-            // Guided tutorial — L1 in scripted mode with step-by-step overlay.
-            // "Return to Map" after winning drops tutorialManager → shows BiomeSelectView.
-            // Back button ("← Home") returns to the home screen.
-            tutorialContainer(manager: mgr)
+            WelcomeView(onComplete: { showingHome = false })
         } else if let biome = selectedBiome {
             ContentView(
                 biome:  biome,
@@ -67,66 +52,6 @@ struct RootView: View {
                 },
                 revealTrigger:  revealTrigger,
                 initialShowHex: wasShowingHex
-            )
-        }
-    }
-
-    // MARK: - Tutorial Container
-
-    /// Thin wrapper that presents L1 in guided-tutorial mode.
-    ///
-    /// `isLastLevelOfBiome` is false — L1 is not the last level of Training Range.
-    /// `onNextLevel` is nil so the win card shows "Return to Map" (via onReturnToMap)
-    /// instead of "Next Level." After the tutorial the player lands on BiomeSelectView.
-    ///
-    /// Behaviour on exit:
-    /// - Win → "Return to Map" → `tutorialManager = nil` → BiomeSelectView
-    /// - Back button (← Home) → `tutorialManager = nil`, `showingHome = true` → WelcomeView
-    @ViewBuilder
-    private func tutorialContainer(manager: TutorialManager) -> some View {
-        let l1 = LevelSpec.trainingRange[0]
-
-        VStack(spacing: 0) {
-            // Minimal top bar
-            HStack(spacing: 0) {
-                Button {
-                    tutorialManager = nil
-                    showingHome     = true
-                } label: {
-                    Label("Home", systemImage: "chevron.left")
-                        .labelStyle(.titleAndIcon)
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.secondary)
-
-                Spacer()
-
-                Text("Tutorial")
-                    .font(.headline)
-
-                Spacer()
-
-                // Balance the chevron on the left
-                Label("Home", systemImage: "chevron.left")
-                    .labelStyle(.titleAndIcon)
-                    .hidden()
-            }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 10)
-            .background(.ultraThinMaterial)
-
-            Divider()
-
-            GameView(
-                levelSpec:             l1,
-                tutorialManager:       manager,
-                onNextLevel:           nil,
-                onReturnToMap:         { tutorialManager = nil },
-                onReturnToLevelSelect: { tutorialManager = nil; showingHome = true },
-                isLastLevelOfBiome:    false,
-                biomeName:             "Training Range",
-                biomeIcon:             "flag.fill",
-                biomeLevelIds:         [l1.id]
             )
         }
     }

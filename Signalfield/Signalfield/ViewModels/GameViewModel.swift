@@ -105,13 +105,6 @@ class GameViewModel: ObservableObject {
     /// resurface is triggered, so rapid clicks don't stack multiple restarts.
     private var quicksandResurfaceTask: Task<Void, Never>?
 
-    // MARK: - Scripted Board Flag
-
-    /// True when this session uses the pre-built tutorial board for L1.
-    /// When true, `handleFirstScan` skips `BoardGenerator.placeHazards` because
-    /// the board already has hazards and signals pre-computed.
-    private(set) var isScriptedBoard: Bool = false
-
     // MARK: - Initialization
 
     /// Create a new game session.
@@ -120,20 +113,10 @@ class GameViewModel: ObservableObject {
     ///   - levelSpec: The level to play.
     ///   - seed: An explicit seed for debugging/seed-sharing. When nil (the default),
     ///     a truly random seed is generated via `BoardGenerator.generateSeed()`.
-    ///   - useScriptedBoard: When true and levelSpec.id == "L1", loads the hardcoded
-    ///     tutorial board instead of generating a random one. Used for the guided
-    ///     tutorial on first play; all subsequent L1 plays use random boards.
-    init(levelSpec: LevelSpec, seed: UInt64? = nil, useScriptedBoard: Bool = false) {
+    init(levelSpec: LevelSpec, seed: UInt64? = nil) {
         self.levelSpec = levelSpec
         self.seed = seed ?? BoardGenerator.generateSeed()
-
-        if useScriptedBoard && levelSpec.id == "L1" {
-            self.board = TutorialBoard.makeBoard()
-            self.isScriptedBoard = true
-        } else {
-            self.board = BoardGenerator.createEmptyBoard(for: levelSpec, seed: self.seed)
-            self.isScriptedBoard = false
-        }
+        self.board = BoardGenerator.createEmptyBoard(for: levelSpec, seed: self.seed)
 
         self.stats.seed = self.seed
         self.beaconChargesRemaining = levelSpec.beaconCharges ?? 0
@@ -284,18 +267,13 @@ class GameViewModel: ObservableObject {
         // in .waitingForFirstScan and the player must click elsewhere.
         guard !board[coord].isLocked else { return }
 
-        if isScriptedBoard {
-            // Tutorial board: hazards and signals are already pre-populated.
-            // Skip BoardGenerator.placeHazards — the board is ready to play.
-        } else {
-            // Normal play: place hazards now that we know the safe zone.
-            board = BoardGenerator.placeHazards(
-                on: board,
-                firstScan: coord,
-                spec: levelSpec,
-                seed: seed
-            )
-        }
+        // Place hazards now that we know the safe zone.
+        board = BoardGenerator.placeHazards(
+            on: board,
+            firstScan: coord,
+            spec: levelSpec,
+            seed: seed
+        )
 
         // Transition to playing
         gameState = .playing

@@ -37,32 +37,6 @@ struct GameView: View {
     /// The board coordinate currently under the cursor (nil when cursor is off-board).
     @State private var hoveredCoord: Coordinate? = nil
 
-    // MARK: - Tutorial
-
-    /// The guided tutorial manager. Non-nil only when L1 is running in tutorial mode.
-    /// When non-nil, all board input is routed through the tutorial manager before
-    /// reaching the game engine.
-    var tutorialManager: TutorialManager? = nil
-
-    // MARK: - Biome Intro Tooltips
-
-    /// Controls visibility of the non-blocking biome intro tooltip for this level.
-    /// Resets to true on each level load (via GameView's .id() identity reset).
-    /// The actual display is gated by settingsStore.shownBiomeIntros so it only
-    /// shows once per biome, not on every visit.
-    @State private var showBiomeIntroTooltip = true
-
-    // MARK: - Board Frame (for tutorial spotlight positioning)
-
-    /// Frame of boardWithInput in the outer ZStack's coordinate space.
-    /// Captured via GeometryReader + PreferenceKey on boardWithInput.
-    /// Used by TutorialOverlayView to calculate tile screen positions.
-    @State private var boardFrame: CGRect = .zero
-
-    // MARK: - Settings Store
-
-    @EnvironmentObject private var settingsStore: SettingsStore
-
     /// Measured outer container size. Updated whenever the window resizes.
     /// Drives `tileSize` so the board always fits within the available space.
     /// Initial value matches a typical compact window; the GeometryReader
@@ -150,9 +124,6 @@ struct GameView: View {
     /// - Parameters:
     ///   - levelSpec: The level to play.
     ///   - seed: Explicit seed for debugging or seed-sharing. Omit for a random game.
-    ///   - tutorialManager: Optional tutorial manager for guided L1 tutorial mode.
-    ///     When non-nil, the scripted board is loaded and board input is routed
-    ///     through the tutorial manager. Nil for all normal gameplay.
     ///   - onNextLevel: Callback to advance to the next level. Nil if last level.
     ///   - onReturnToMap: Callback to return to BiomeSelectView. Nil if not last level.
     ///   - isLastLevelOfBiome: True when this level is the biome's final level.
@@ -160,7 +131,6 @@ struct GameView: View {
     ///   - biomeIcon: SF Symbol name for the biome icon.
     ///   - biomeLevelIds: All level IDs in this biome (for computing total stars).
     init(levelSpec: LevelSpec, seed: UInt64? = nil,
-         tutorialManager: TutorialManager? = nil,
          onNextLevel: (() -> Void)? = nil, onReturnToMap: (() -> Void)? = nil,
          onReturnToLevelSelect: (() -> Void)? = nil,
          isLastLevelOfBiome: Bool = false, biomeName: String = "",
@@ -168,13 +138,10 @@ struct GameView: View {
         // _viewModel uses the @StateObject autoclosure so SwiftUI creates the
         // object exactly once per view identity. A new .id() in the parent
         // means a new identity → a new ViewModel → a new random seed.
-        let useScriptedBoard = tutorialManager != nil
         _viewModel = StateObject(wrappedValue: GameViewModel(
             levelSpec: levelSpec,
-            seed: seed,
-            useScriptedBoard: useScriptedBoard
+            seed: seed
         ))
-        self.tutorialManager         = tutorialManager
         self.onNextLevel             = onNextLevel
         self.onReturnToMap           = onReturnToMap
         self.onReturnToLevelSelect   = onReturnToLevelSelect
@@ -250,23 +217,6 @@ struct GameView: View {
     private var showEndOfLevel: Bool {
         viewModel.gameState == .won || viewModel.gameState == .lost
     }
-
-    /// True when a tutorial "Got it" step is active — the current step advances via a
-    /// button tap in the tooltip, NOT via a board click.
-    ///
-    /// When true, BoardInputView is removed from the view hierarchy entirely so that
-    /// AppKit's hit-testing cannot intercept clicks destined for the SwiftUI "Got it"
-    /// button. Without this, BoardInputNSView.hitTest() claims valid board-tile
-    /// coordinates (including those under the tooltip card) before SwiftUI can route
-    /// the tap to the Button — leaving the tutorial permanently stuck.
-    ///
-    /// BoardInputView is still present for steps 2, 7, and 8 (where the player must
-    /// click or right-click a specific board tile to advance).
-    ///
-    /// Driven by TutorialBlocksInputKey preference published by TutorialOverlayView
-    /// so it updates reactively whenever the tutorial step changes, without requiring
-    /// TutorialManager to be an @ObservedObject on GameView.
-    @State private var tutorialBlocksBoardInput: Bool = false
 
     var body: some View {
         // GeometryReader at the TOP of body — outside the ZStack — so it
@@ -353,47 +303,6 @@ struct GameView: View {
           .padding(20)
           .frame(minWidth: 400, minHeight: 500)
 
-          // Biome intro tooltips — non-blocking floating parchment card shown
-          // on the first visit to the opening level of each biome (including The Delta).
-          // No dimming — the player can interact with the board immediately.
-          //
-          // "Got it" = dismiss for this session only (tooltip reappears next visit).
-          // "Don't show again" = dismiss permanently (persisted in SettingsStore).
-          // Auto-dismiss after 10 seconds = same as "Got it" (session only).
-          if showBiomeIntroTooltip && isFirstBiomeLevel
-              && tutorialManager == nil
-              && !settingsStore.shownBiomeIntros.contains(viewModel.levelSpec.biomeId) {
-              let biomeBase = viewModel.levelSpec.biomeId >= 10
-                  ? viewModel.levelSpec.biomeId - 9
-                  : viewModel.levelSpec.biomeId
-              let isHex = viewModel.levelSpec.gridShape == .hexagonal
-
-              // Centered horizontally, near the top with comfortable padding
-              // below the HUD. The tooltip renders its own parchment card.
-              // .contentShape ensures the button receives taps even when the
-              // tooltip overlaps the AppKit BoardInputView underneath.
-              BiomeIntroTooltipView(
-                  biomeId: biomeBase,
-                  isHex:   isHex,
-                  onDismiss: {
-                      // Session-only dismiss — tooltip will reappear next visit
-                      withAnimation(.easeOut(duration: 0.15)) {
-                          showBiomeIntroTooltip = false
-                      }
-                  },
-                  onDismissPermanently: {
-                      // Permanent dismiss — never show again for this biome
-                      withAnimation(.easeOut(duration: 0.15)) {
-                          showBiomeIntroTooltip = false
-                      }
-                      settingsStore.shownBiomeIntros.insert(viewModel.levelSpec.biomeId)
-                  }
-              )
-              .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-              .padding(.top, 110) // Below the title + HUD + some breathing room
-              .transition(.opacity)
-          }
-
           // End-of-level overlays — live in the OUTER ZStack so they are true
           // full-window overlays and cannot affect the VStack / board ZStack layout.
           // EndOfLevelView uses .frame(maxWidth:.infinity, maxHeight:.infinity) for
@@ -420,43 +329,15 @@ struct GameView: View {
                   EndOfLevelView(viewModel: viewModel,
                                  onNextLevel:           onNextLevel,
                                  onReturnToMap:         onReturnToMap,
-                                 onReturnToLevelSelect: onReturnToLevelSelect,
-                                 customTitle:           viewModel.isScriptedBoard ? "Tutorial Complete!" : nil)
+                                 onReturnToLevelSelect: onReturnToLevelSelect)
                       .transition(.opacity)
               }
           }
 
-          // Tutorial overlay — topmost layer when L1 tutorial is active.
-          // Scrim + spotlight cutout + highlight rings are non-interactive
-          // (allowsHitTesting(false) on Layer A). The tooltip "Got it" button
-          // receives taps because BoardInputView is removed during Got-it steps
-          // (tutorialBlocksBoardInput), preventing AppKit from stealing the click.
-          if let manager = tutorialManager, manager.isActive {
-              TutorialOverlayView(
-                  manager:      manager,
-                  boardFrame:   boardFrame,
-                  tileSize:     tileSize,
-                  gridSpacing:  gridSpacing,
-                  board:        viewModel.board
-              )
-              .transition(.opacity)
-          }
         }
         .coordinateSpace(.named("gameRoot"))
-        // React to tutorial step changes published by TutorialOverlayView.
-        // TutorialOverlayView has @ObservedObject on TutorialManager, so it
-        // re-renders on every step change and re-publishes this preference value.
-        // GameView reads it here and updates the @State that gates BoardInputView.
-        .onPreferenceChange(TutorialBlocksInputKey.self) { blocks in
-            tutorialBlocksBoardInput = blocks
-        }
-        // Wire tutorial manager callbacks and seed containerSize on first appear.
+        // Seed containerSize on first appear.
         .onAppear {
-            if let manager = tutorialManager {
-                manager.onForwardScan = { [weak viewModel] coord in viewModel?.scanTile(at: coord) }
-                manager.onForwardTag  = { [weak viewModel] coord in viewModel?.tagTile(at: coord) }
-                manager.start()
-            }
             // Seed containerSize from the top-level GeometryReader on first appear.
             // proxy.size here is the space ContentView allocated to GameView — free of
             // the circular dependency that arose when measuring the ZStack's own background.
@@ -469,7 +350,6 @@ struct GameView: View {
             if size.width > 0 && size.height > 0 { containerSize = size }
         }
         } // end GeometryReader closure — proxy is in scope for all modifiers above
-        .animation(.easeInOut(duration: 0.35), value: showBiomeIntroTooltip)
         .animation(.easeInOut(duration: 0.30), value: showEndOfLevel)
         .focusable()
         .onKeyPress(.space) {
@@ -600,7 +480,7 @@ struct GameView: View {
             // Invisible input layer on top — handles all mouse events via AppKit.
             // gridShape is forwarded so BoardInputView uses the correct coordinate
             // conversion: simple division for square, proximity hit-test for hex.
-            if !isGameInactive && !tutorialBlocksBoardInput {
+            if !isGameInactive {
                 BoardInputView(
                     boardWidth: viewModel.board.width,
                     boardHeight: viewModel.board.height,
@@ -644,22 +524,6 @@ struct GameView: View {
                 .padding(-28)
                 .blur(radius: 22)
         )
-        // Capture boardWithInput's frame in the outer ZStack's coordinate space
-        // so TutorialOverlayView can compute tile screen positions for the spotlight.
-        .background(
-            GeometryReader { geo in
-                Color.clear
-                    .allowsHitTesting(false)
-                    .preference(
-                        key: BoardFrameKey.self,
-                        value: geo.frame(in: .named("gameRoot"))
-                    )
-            }
-            .allowsHitTesting(false)
-        )
-        .onPreferenceChange(BoardFrameKey.self) { frame in
-            boardFrame = frame
-        }
     }
 
     // MARK: - Tile Grid Layout
@@ -728,14 +592,6 @@ struct GameView: View {
     // MARK: - Input Handling
 
     private func handleBoardInput(_ action: BoardInputAction) {
-        // Tutorial gating: when a tutorial manager is active, route all board
-        // input through it. The manager decides whether to forward the action
-        // to the game engine (expected tutorial input) or swallow it (wrong tile).
-        if let manager = tutorialManager, manager.isActive {
-            manager.handleBoardInput(action)
-            return
-        }
-
         switch action {
         case .scan(let coord):
             // Conductor targeting mode: flash illuminates a 3×3 area around click

@@ -46,7 +46,6 @@ struct EndOfLevelView: View {
 
     /// Optional title override for the win card.
     /// When non-nil, replaces "Level Clear!" in the expanded card and collapsed pill.
-    /// Used by the tutorial to show "Tutorial Complete!" instead.
     var customTitle: String? = nil
 
     // MARK: Convenience

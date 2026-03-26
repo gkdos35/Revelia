@@ -12,10 +12,9 @@ import SwiftUI
 
 struct WelcomeView: View {
     let onComplete: () -> Void
-    let onTutorial: () -> Void
 
     var body: some View {
-        TitleSplashView(onDismiss: onComplete, onTutorial: onTutorial)
+        TitleSplashView(onDismiss: onComplete)
     }
 }
 
@@ -26,18 +25,16 @@ struct WelcomeView: View {
 /// `onDismiss` is called when the player taps Play or Continue.
 struct TitleSplashView: View {
     let onDismiss: () -> Void
-    /// Called when the Tutorial button is tapped. Defaults to a no-op so
-    /// BiomeSelectView's home-screen overlay (which has no tutorial handler)
-    /// compiles without change.
-    var onTutorial: () -> Void = {}
 
     @EnvironmentObject private var progressStore: ProgressStore
     @EnvironmentObject private var settingsStore: SettingsStore
 
     // Settings sheet
-    @State private var showSettings   = false
+    @State private var showSettings      = false
+    // "Coming soon" toast for tutorial button
+    @State private var showComingSoon    = false
     // Primary button press animation
-    @State private var primaryPressed = false
+    @State private var primaryPressed    = false
 
     // Colour constants
     private let meadowGreen = Color(red: 0x7A / 255.0, green: 0xAA / 255.0, blue: 0x58 / 255.0)
@@ -131,10 +128,12 @@ struct TitleSplashView: View {
                         }
                         .buttonStyle(.plain)
 
-                        // Tutorial — resets tutorial state and navigates to L1 in guided mode
+                        // Tutorial — coming soon
                         Button {
-                            settingsStore.resetTutorial()
-                            onTutorial()
+                            showComingSoon = true
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                showComingSoon = false
+                            }
                         } label: {
                             Text("Tutorial")
                                 .font(.system(.body, design: .rounded))
@@ -147,6 +146,20 @@ struct TitleSplashView: View {
                         .buttonStyle(.plain)
                     }
 
+                    // "Coming soon" toast
+                    if showComingSoon {
+                        Text("Coming soon!")
+                            .font(.system(.caption, design: .rounded))
+                            .fontWeight(.medium)
+                            .foregroundColor(.white.opacity(0.85))
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 6)
+                            .background(Color.black.opacity(0.55))
+                            .cornerRadius(8)
+                            .transition(.opacity)
+                            .padding(.top, 8)
+                    }
+
                     Spacer().frame(height: 48)
                 }
                 .frame(width: geo.size.width, height: geo.size.height)
@@ -157,6 +170,7 @@ struct TitleSplashView: View {
         .sheet(isPresented: $showSettings) {
             SettingsView()
         }
+        .animation(.easeInOut(duration: 0.25), value: showComingSoon)
     }
 }
 
@@ -214,7 +228,7 @@ private struct Particle: Identifiable {
 // MARK: - Preview
 
 #Preview("Title Splash — no progress") {
-    TitleSplashView(onDismiss: {}, onTutorial: {})
+    TitleSplashView(onDismiss: {})
         .environmentObject(ProgressStore())
         .environmentObject(SettingsStore())
         .frame(width: 600, height: 700)

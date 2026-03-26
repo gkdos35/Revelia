@@ -262,10 +262,11 @@ struct GameView: View {
     ///
     /// BoardInputView is still present for steps 2, 7, and 8 (where the player must
     /// click or right-click a specific board tile to advance).
-    private var tutorialBlocksBoardInput: Bool {
-        guard let manager = tutorialManager, manager.isActive else { return false }
-        return manager.requiresGotItButton
-    }
+    ///
+    /// Driven by TutorialBlocksInputKey preference published by TutorialOverlayView
+    /// so it updates reactively whenever the tutorial step changes, without requiring
+    /// TutorialManager to be an @ObservedObject on GameView.
+    @State private var tutorialBlocksBoardInput: Bool = false
 
     var body: some View {
         // GeometryReader at the TOP of body — outside the ZStack — so it
@@ -442,6 +443,13 @@ struct GameView: View {
           }
         }
         .coordinateSpace(.named("gameRoot"))
+        // React to tutorial step changes published by TutorialOverlayView.
+        // TutorialOverlayView has @ObservedObject on TutorialManager, so it
+        // re-renders on every step change and re-publishes this preference value.
+        // GameView reads it here and updates the @State that gates BoardInputView.
+        .onPreferenceChange(TutorialBlocksInputKey.self) { blocks in
+            tutorialBlocksBoardInput = blocks
+        }
         // Wire tutorial manager callbacks and seed containerSize on first appear.
         .onAppear {
             if let manager = tutorialManager {

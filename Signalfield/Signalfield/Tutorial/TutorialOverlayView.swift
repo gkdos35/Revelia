@@ -114,6 +114,11 @@ struct TutorialOverlayView: View {
                 tooltipLayer(overlaySize: measuredOverlaySize)
             }
         }
+        // Publish whether the tutorial step requires the "Got it" button.
+        // GameView observes this via onPreferenceChange to add/remove BoardInputView
+        // reactively — without needing to observe TutorialManager directly.
+        .preference(key: TutorialBlocksInputKey.self,
+                    value: manager.requiresGotItButton && manager.isActive)
         .onAppear {
             withAnimation(.easeInOut(duration: 0.9).repeatForever(autoreverses: true)) {
                 highlightPulse = true
@@ -313,6 +318,19 @@ struct BoardFrameKey: PreferenceKey {
 struct OverlaySizeKey: PreferenceKey {
     static let defaultValue: CGSize = .zero
     static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+        value = nextValue()
+    }
+}
+
+// MARK: - Tutorial Blocks Input Preference Key
+
+/// Propagates whether the current tutorial step requires the "Got it" button
+/// (and therefore board input must be blocked) from TutorialOverlayView up to
+/// GameView. GameView reads this via .onPreferenceChange to add/remove
+/// BoardInputView reactively, without needing TutorialManager as @ObservedObject.
+struct TutorialBlocksInputKey: PreferenceKey {
+    static let defaultValue: Bool = false
+    static func reduce(value: inout Bool, nextValue: () -> Bool) {
         value = nextValue()
     }
 }

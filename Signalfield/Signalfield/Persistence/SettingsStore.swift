@@ -16,6 +16,14 @@ final class SettingsStore: ObservableObject {
         didSet { save() }
     }
 
+    /// Biome IDs whose mechanic intro the player has dismissed with "Don't show again".
+    /// Square and hex campaigns track independently — biome 1 (square) and biome 10
+    /// (hex Fog Marsh) are stored as separate IDs so each campaign's intro can be
+    /// shown once.
+    @Published var shownBiomeIntros: [Int] = [] {
+        didSet { save() }
+    }
+
     // MARK: - Persistence
 
     private static let fileName = "settings.json"
@@ -34,6 +42,7 @@ final class SettingsStore: ObservableObject {
 
     private struct Snapshot: Codable {
         var soundEnabled: Bool
+        var shownBiomeIntros: [Int]?    // optional so old settings.json (pre-1.1) still decodes
     }
 
     // MARK: - Init
@@ -49,13 +58,27 @@ final class SettingsStore: ObservableObject {
               let snapshot = try? JSONDecoder().decode(Snapshot.self, from: data)
         else { return }
 
-        soundEnabled = snapshot.soundEnabled
+        soundEnabled      = snapshot.soundEnabled
+        shownBiomeIntros  = snapshot.shownBiomeIntros ?? []
     }
 
     private func save() {
-        let snapshot = Snapshot(soundEnabled: soundEnabled)
+        let snapshot = Snapshot(soundEnabled: soundEnabled, shownBiomeIntros: shownBiomeIntros)
         if let data = try? JSONEncoder().encode(snapshot) {
             try? data.write(to: Self.fileURL, options: .atomic)
         }
+    }
+
+    // MARK: - Biome intro helpers
+
+    /// Records that the player has chosen "Don't show again" for this biome's intro.
+    func markBiomeIntroShown(_ biomeId: Int) {
+        guard !shownBiomeIntros.contains(biomeId) else { return }
+        shownBiomeIntros.append(biomeId)
+    }
+
+    /// True when the mechanic intro for this biome should be suppressed.
+    func isBiomeIntroSuppressed(_ biomeId: Int) -> Bool {
+        shownBiomeIntros.contains(biomeId)
     }
 }

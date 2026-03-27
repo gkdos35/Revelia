@@ -13,6 +13,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var progressStore: ProgressStore
+    @EnvironmentObject var settingsStore: SettingsStore
 
     /// The biome being played. Provided by RootView via BiomeSelectView.
     /// When nil (dev/preview mode), shows a placeholder.
@@ -31,6 +32,9 @@ struct ContentView: View {
 
     /// Changing this UUID forces GameView to recreate its ViewModel (new random seed).
     @State private var gameKey: UUID = UUID()
+
+    /// Controls whether the biome mechanic intro sheet is visible.
+    @State private var showBiomeMechanic: Bool = false
 
     // MARK: - Derived
 
@@ -105,6 +109,30 @@ struct ContentView: View {
 
             // ── Debug shortcuts (always in the responder chain) ───────────────
             debugShortcuts
+        }
+        // ── Biome mechanic intro sheet ────────────────────────────────────────
+        // Presented as a sheet (never an overlay) so GameView's layout and input
+        // are completely unaffected. Fires when the player enters a biome's first
+        // level for the first time — unless they previously checked "Don't show again".
+        .sheet(isPresented: $showBiomeMechanic) {
+            BiomeMechanicView(
+                biomeId: biome?.id ?? 0,
+                onDontShowAgain: {
+                    if let b = biome {
+                        settingsStore.markBiomeIntroShown(b.id)
+                    }
+                }
+            )
+        }
+        .onChange(of: selectedLevel) { newLevel in
+            guard
+                let level  = newLevel,
+                let b      = biome,
+                b.id % 9 != 0,                          // Training Range has no intro
+                level.id == levels.first?.id,           // only on the biome's first level
+                !settingsStore.isBiomeIntroSuppressed(b.id)
+            else { return }
+            showBiomeMechanic = true
         }
     }
 

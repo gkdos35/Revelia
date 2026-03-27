@@ -19,10 +19,10 @@ import SwiftUI
 struct HowToPlayView: View {
 
     @Environment(\.dismiss) private var dismiss
-    @State private var currentPage  = 0
-    @State private var dragOffset:  CGFloat = 0
-    private let totalPages  = 6
-    private let pageWidth:  CGFloat = 520
+    @State private var currentPage       = 0
+    /// Tracks swipe direction so the slide transition enters from the correct edge.
+    @State private var navigatingForward = true
+    private let totalPages = 6
 
     // Training Range palette — biome 0
     private let theme = BiomeTheme.theme(for: 0)
@@ -47,41 +47,31 @@ struct HowToPlayView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
-                // ── Custom swipeable pager (.page TabViewStyle is macOS-unavailable) ─
-                // Pages sit in a horizontal strip; we offset by currentPage * pageWidth.
-                // DragGesture provides the swipe-to-advance behaviour.
+                // ── One-at-a-time page display with asymmetric slide transition ───
+                // Each page is shown via a switch so only one view is in the
+                // hierarchy at a time. .id(currentPage) forces SwiftUI to treat
+                // the incoming page as a brand-new view, triggering the transitions.
+                // navigatingForward controls which edge each page enters/exits from.
                 ZStack {
-                    HStack(spacing: 0) {
-                        page1.frame(width: pageWidth)
-                        page2.frame(width: pageWidth)
-                        page3.frame(width: pageWidth)
-                        page4.frame(width: pageWidth)
-                        page5.frame(width: pageWidth)
-                        page6.frame(width: pageWidth)
+                    Group {
+                        switch currentPage {
+                        case 0:  page1
+                        case 1:  page2
+                        case 2:  page3
+                        case 3:  page4
+                        case 4:  page5
+                        default: page6
+                        }
                     }
-                    .offset(x: -CGFloat(currentPage) * pageWidth + dragOffset)
-                    .animation(.easeInOut(duration: 0.30), value: currentPage)
+                    .id(currentPage)
+                    .transition(.asymmetric(
+                        insertion: .move(edge: navigatingForward ? .trailing : .leading),
+                        removal:   .move(edge: navigatingForward ? .leading  : .trailing)
+                    ))
                 }
-                .frame(width: pageWidth)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .clipped()
-                .gesture(
-                    DragGesture(minimumDistance: 15)
-                        .onChanged { value in
-                            dragOffset = value.translation.width
-                        }
-                        .onEnded { value in
-                            withAnimation(.easeInOut(duration: 0.30)) {
-                                if value.translation.width < -60,
-                                   currentPage < totalPages - 1 {
-                                    currentPage += 1
-                                } else if value.translation.width > 60,
-                                          currentPage > 0 {
-                                    currentPage -= 1
-                                }
-                                dragOffset = 0
-                            }
-                        }
-                )
+                .animation(.easeInOut(duration: 0.28), value: currentPage)
 
                 // ── Custom page dots (warm brown ◆) ──────────────────────────────
                 HStack(spacing: 10) {
@@ -92,21 +82,36 @@ struct HowToPlayView: View {
                             .animation(.easeInOut(duration: 0.20), value: currentPage)
                     }
                 }
-                .padding(.bottom, 18)
+                .padding(.bottom, 10)
             }
         }
         .frame(width: 520, height: 660)
     }
 
+    // MARK: - Navigation helpers
+
+    private func advance() {
+        guard currentPage < totalPages - 1 else { return }
+        navigatingForward = true
+        withAnimation(.easeInOut(duration: 0.28)) { currentPage += 1 }
+    }
+
+    private func retreat() {
+        guard currentPage > 0 else { return }
+        navigatingForward = false
+        withAnimation(.easeInOut(duration: 0.28)) { currentPage -= 1 }
+    }
+
     // MARK: - Page shell
     // Each page uses this wrapper: parchment background is shared, the shell
-    // adds the ✕ button, title, illustration hero, body text, and optional
-    // "Start Playing" button on the last page.
+    // adds the ✕ button, title, illustration hero, body text, and the
+    // navigation row (Back + Next, or Start Playing on the last page).
 
     @ViewBuilder
     private func pageShell<I: View, B: View>(
         title: String,
-        isLast: Bool = false,
+        isFirst: Bool = false,
+        isLast:  Bool = false,
         @ViewBuilder illustration: () -> I,
         @ViewBuilder bodyText: () -> B
     ) -> some View {
@@ -126,9 +131,9 @@ struct HowToPlayView: View {
                 // Illustration hero — aims for ~55 % of usable height
                 illustration()
                     .frame(maxWidth: .infinity)
-                    .frame(height: 300)
+                    .frame(height: 280)
 
-                Spacer(minLength: 10)
+                Spacer(minLength: 8)
 
                 // Body text
                 bodyText()
@@ -138,26 +143,70 @@ struct HowToPlayView: View {
                     .lineSpacing(3)
                     .padding(.horizontal, 36)
 
-                Spacer(minLength: 10)
+                Spacer(minLength: 8)
 
-                // "Start Playing" only on the last page
-                if isLast {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Text("Start Playing")
-                            .font(.system(.body, design: .rounded))
-                            .fontWeight(.semibold)
-                            .foregroundColor(.white)
-                            .frame(width: 200, height: 44)
-                            .background(meadowGreen)
-                            .cornerRadius(8)
+                // ── Navigation row ────────────────────────────────────────────────
+                // Back (left) + Next or Start Playing (right).
+                // Keyboard shortcuts: ← / → arrow keys navigate; Return confirms
+                // the primary action on the last page.
+                HStack(alignment: .center) {
+
+                    // Back — hidden on the first page; a fixed spacer keeps the
+                    // Next button right-aligned even when Back is absent.
+                    if !isFirst {
+                        Button {
+                            retreat()
+                        } label: {
+                            Text("← Back")
+                                .font(.system(.body, design: .rounded))
+                                .fontWeight(.medium)
+                                .foregroundColor(parchmentBrown.opacity(0.55))
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 9)
+                        }
+                        .buttonStyle(.plain)
+                        .keyboardShortcut(.leftArrow, modifiers: [])
+                    } else {
+                        // Invisible placeholder keeps HStack balanced
+                        Color.clear.frame(width: 80, height: 36)
                     }
-                    .buttonStyle(.plain)
-                    .padding(.bottom, 6)
-                }
 
-                Spacer(minLength: 6)
+                    Spacer()
+
+                    // Next (middle pages) or Start Playing (last page)
+                    if isLast {
+                        Button {
+                            dismiss()
+                        } label: {
+                            Text("Start Playing")
+                                .font(.system(.body, design: .rounded))
+                                .fontWeight(.semibold)
+                                .foregroundColor(.white)
+                                .frame(width: 180, height: 40)
+                                .background(meadowGreen)
+                                .cornerRadius(8)
+                        }
+                        .buttonStyle(.plain)
+                        .keyboardShortcut(.return, modifiers: [])
+                    } else {
+                        Button {
+                            advance()
+                        } label: {
+                            Text("Next →")
+                                .font(.system(.body, design: .rounded))
+                                .fontWeight(.semibold)
+                                .foregroundColor(parchmentBrown)
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 9)
+                                .background(parchmentBrown.opacity(0.12))
+                                .cornerRadius(8)
+                        }
+                        .buttonStyle(.plain)
+                        .keyboardShortcut(.rightArrow, modifiers: [])
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 14)
             }
 
             // ✕ close button — present on every page
@@ -179,7 +228,7 @@ struct HowToPlayView: View {
     // MARK: - Page 1 — The Field
 
     private var page1: some View {
-        pageShell(title: "The Field") {
+        pageShell(title: "The Field", isFirst: true) {
             // 4×4 grid of hidden tiles. One tile pulses with a glow suggesting "tap me."
             HTMiniGrid(rows: 4, cols: 4) { row, col in
                 let isPulsing = (row == 1 && col == 2)

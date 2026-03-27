@@ -19,8 +19,10 @@ import SwiftUI
 struct HowToPlayView: View {
 
     @Environment(\.dismiss) private var dismiss
-    @State private var currentPage = 0
-    private let totalPages = 6
+    @State private var currentPage  = 0
+    @State private var dragOffset:  CGFloat = 0
+    private let totalPages  = 6
+    private let pageWidth:  CGFloat = 520
 
     // Training Range palette — biome 0
     private let theme = BiomeTheme.theme(for: 0)
@@ -45,19 +47,43 @@ struct HowToPlayView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
-                // ── Swipeable pages ───────────────────────────────────────────────
-                TabView(selection: $currentPage) {
-                    page1.tag(0)
-                    page2.tag(1)
-                    page3.tag(2)
-                    page4.tag(3)
-                    page5.tag(4)
-                    page6.tag(5)
+                // ── Custom swipeable pager (.page TabViewStyle is macOS-unavailable) ─
+                // Pages sit in a horizontal strip; we offset by currentPage * pageWidth.
+                // DragGesture provides the swipe-to-advance behaviour.
+                ZStack {
+                    HStack(spacing: 0) {
+                        page1.frame(width: pageWidth)
+                        page2.frame(width: pageWidth)
+                        page3.frame(width: pageWidth)
+                        page4.frame(width: pageWidth)
+                        page5.frame(width: pageWidth)
+                        page6.frame(width: pageWidth)
+                    }
+                    .offset(x: -CGFloat(currentPage) * pageWidth + dragOffset)
+                    .animation(.easeInOut(duration: 0.30), value: currentPage)
                 }
-                .tabViewStyle(.page(indexDisplayMode: .never))
-                .animation(.easeInOut(duration: 0.25), value: currentPage)
+                .frame(width: pageWidth)
+                .clipped()
+                .gesture(
+                    DragGesture(minimumDistance: 15)
+                        .onChanged { value in
+                            dragOffset = value.translation.width
+                        }
+                        .onEnded { value in
+                            withAnimation(.easeInOut(duration: 0.30)) {
+                                if value.translation.width < -60,
+                                   currentPage < totalPages - 1 {
+                                    currentPage += 1
+                                } else if value.translation.width > 60,
+                                          currentPage > 0 {
+                                    currentPage -= 1
+                                }
+                                dragOffset = 0
+                            }
+                        }
+                )
 
-                // ── Custom page dots (warm brown ◆ / ◇) ──────────────────────────
+                // ── Custom page dots (warm brown ◆) ──────────────────────────────
                 HStack(spacing: 10) {
                     ForEach(0..<totalPages, id: \.self) { index in
                         Text("◆")
@@ -262,9 +288,9 @@ struct HowToPlayView: View {
             .padding(.horizontal, 100)
         } bodyText: {
             VStack(spacing: 6) {
-                (Text("This 1 has only one hidden neighbor left. That tile ")
-                    + Text("MUST").bold()
-                    + Text(" be the hazard."))
+                // Markdown bold (**MUST**) avoids the deprecated Text + operator
+                // and works on macOS 12+ (well within the macOS 13+ deployment target).
+                Text("This 1 has only one hidden neighbor left. That tile **MUST** be the hazard.")
                     .font(.system(size: 14, design: .rounded))
 
                 Text("That's the core of the game — use the signals to figure out which tiles are dangerous.")

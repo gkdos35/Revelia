@@ -31,8 +31,8 @@ struct TitleSplashView: View {
 
     // Settings sheet
     @State private var showSettings      = false
-    // "Coming soon" toast for tutorial button
-    @State private var showComingSoon    = false
+    // How to Play sheet
+    @State private var showHowToPlay     = false
     // Primary button press animation
     @State private var primaryPressed    = false
 
@@ -128,14 +128,11 @@ struct TitleSplashView: View {
                         }
                         .buttonStyle(.plain)
 
-                        // Tutorial — coming soon
+                        // How to Play
                         Button {
-                            showComingSoon = true
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                showComingSoon = false
-                            }
+                            showHowToPlay = true
                         } label: {
-                            Text("Tutorial")
+                            Text("How to Play")
                                 .font(.system(.body, design: .rounded))
                                 .fontWeight(.semibold)
                                 .foregroundColor(.white)
@@ -144,20 +141,6 @@ struct TitleSplashView: View {
                                 .cornerRadius(8)
                         }
                         .buttonStyle(.plain)
-                    }
-
-                    // "Coming soon" toast
-                    if showComingSoon {
-                        Text("Coming soon!")
-                            .font(.system(.caption, design: .rounded))
-                            .fontWeight(.medium)
-                            .foregroundColor(.white.opacity(0.85))
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 6)
-                            .background(Color.black.opacity(0.55))
-                            .cornerRadius(8)
-                            .transition(.opacity)
-                            .padding(.top, 8)
                     }
 
                     Spacer().frame(height: 48)
@@ -170,7 +153,9 @@ struct TitleSplashView: View {
         .sheet(isPresented: $showSettings) {
             SettingsView()
         }
-        .animation(.easeInOut(duration: 0.25), value: showComingSoon)
+        .sheet(isPresented: $showHowToPlay) {
+            HowToPlayView()
+        }
     }
 }
 

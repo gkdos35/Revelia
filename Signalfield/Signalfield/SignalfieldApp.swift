@@ -10,11 +10,15 @@ struct SignalfieldApp: App {
     /// App-level settings (signal display mode, sound, first-launch flag).
     @StateObject private var settingsStore = SettingsStore()
 
+    /// Specimen collection store — tracks which specimens the player has unlocked.
+    @StateObject private var specimenStore = SpecimenStore()
+
     var body: some Scene {
         WindowGroup {
             RootView()
                 .environmentObject(progressStore)
                 .environmentObject(settingsStore)
+                .environmentObject(specimenStore)
         }
         .defaultSize(width: 600, height: 700)
     }

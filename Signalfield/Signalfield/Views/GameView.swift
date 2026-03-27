@@ -31,6 +31,12 @@ struct GameView: View {
     var biomeLevelIds: [String] = []
 
     @EnvironmentObject private var progressStore: ProgressStore
+    @EnvironmentObject private var specimenStore: SpecimenStore
+
+    /// The specimen outcome of the most recent winning run.
+    /// Computed in the .won onChange before EndOfLevelView appears, so the card
+    /// knows which animation state to show from the first frame it renders.
+    @State private var specimenUnlockResult: SpecimenUnlockResult = .none
 
     // MARK: - Linked Tile Hover (Biome 2)
 
@@ -329,7 +335,8 @@ struct GameView: View {
                   EndOfLevelView(viewModel: viewModel,
                                  onNextLevel:           onNextLevel,
                                  onReturnToMap:         onReturnToMap,
-                                 onReturnToLevelSelect: onReturnToLevelSelect)
+                                 onReturnToLevelSelect: onReturnToLevelSelect,
+                                 specimenUnlockResult:  specimenUnlockResult)
                       .transition(.opacity)
               }
           }
@@ -420,6 +427,40 @@ struct GameView: View {
                 if viewModel.stats.shieldUsed {
                     progressStore.markShieldUsed(biomeId: viewModel.levelSpec.biomeId)
                 }
+
+                // ── Specimen unlock ──────────────────────────────────────
+                // Must run AFTER recordResult so shield/star state is final.
+                // isAlreadyCollected is checked BEFORE unlock so the card knows
+                // whether to play the burst animation or show the static state.
+                specimenUnlockResult = .none
+                if viewModel.stars == 3,
+                   let specimen = SpecimenCatalog.specimen(for: viewModel.levelSpec.id) {
+                    let wasAlreadyCollected = specimenStore.isUnlocked(specimen.id)
+                    specimenStore.unlock(specimen.id)
+
+                    // Check if completing this level also earns the biome rare specimen.
+                    var rareSpecimen: Specimen? = nil
+                    let biomeId = specimen.biomeId
+                    let isHex   = specimen.isHex
+                    if specimenStore.allLevelSpecimensUnlocked(for: biomeId, isHex: isHex),
+                       let rare = SpecimenCatalog.rareSpecimen(for: biomeId, isHex: isHex),
+                       !specimenStore.isUnlocked(rare.id) {
+                        specimenStore.unlock(rare.id)
+                        rareSpecimen = rare
+                    }
+
+                    if wasAlreadyCollected {
+                        specimenUnlockResult = .alreadyCollected(specimen: specimen)
+                    } else {
+                        specimenUnlockResult = .newDiscovery(specimen: specimen, rare: rareSpecimen)
+                    }
+                }
+
+            // ── Retry / reset ────────────────────────────────────────────
+            case .waitingForFirstScan:
+                // Clear the specimen result so if the player retries and the card
+                // momentarily flashes, it shows the clean .none state.
+                specimenUnlockResult = .none
 
             default:
                 break

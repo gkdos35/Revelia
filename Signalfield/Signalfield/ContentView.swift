@@ -14,6 +14,7 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var progressStore: ProgressStore
     @EnvironmentObject var settingsStore: SettingsStore
+    @EnvironmentObject var specimenStore: SpecimenStore
 
     /// The biome being played. Provided by RootView via BiomeSelectView.
     /// When nil (dev/preview mode), shows a placeholder.
@@ -131,7 +132,7 @@ struct ContentView: View {
                 b.id % 9 != 0,                          // Training Range has no intro
                 level.id == levels.first?.id,           // only on the biome's first level
                 !settingsStore.isBiomeIntroSuppressed(b.id)
-            else { return }
+            else { return } 
             showBiomeMechanic = true
         }
     }
@@ -230,6 +231,16 @@ struct ContentView: View {
                 timeSeconds: 1.0,
                 stars:       3
             )
+            // DEBUG — also unlock the specimen for this level (mirrors real win logic)
+            if let specimen = SpecimenCatalog.specimen(for: level.id) {
+                specimenStore.unlock(specimen.id)
+                let biomeId = specimen.biomeId
+                let isHex   = specimen.isHex
+                if specimenStore.allLevelSpecimensUnlocked(for: biomeId, isHex: isHex),
+                   let rare = SpecimenCatalog.rareSpecimen(for: biomeId, isHex: isHex) {
+                    specimenStore.unlock(rare.id)
+                }
+            }
             if isLastLevelOfBiome {
                 selectedLevel = nil
                 let completedMapIndex = (biome?.id ?? 0) % 9
@@ -271,6 +282,7 @@ struct ContentView: View {
     )
     .environmentObject(ProgressStore())
     .environmentObject(SettingsStore())
+    .environmentObject(SpecimenStore())
     .frame(width: 600, height: 700)
 }
 
@@ -278,5 +290,6 @@ struct ContentView: View {
     ContentView()
         .environmentObject(ProgressStore())
         .environmentObject(SettingsStore())
+        .environmentObject(SpecimenStore())
         .frame(width: 600, height: 700)
 }

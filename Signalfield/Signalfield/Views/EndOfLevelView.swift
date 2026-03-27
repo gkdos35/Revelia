@@ -48,6 +48,11 @@ struct EndOfLevelView: View {
     /// When non-nil, replaces "Level Clear!" in the expanded card and collapsed pill.
     var customTitle: String? = nil
 
+    /// The specimen outcome of this run. Determines which of three states the
+    /// specimen area shows: teaser (< 3★), already collected (replay), or burst reveal (new).
+    /// Defaults to .none so loss cards and BiomeCompleteView are unaffected.
+    var specimenUnlockResult: SpecimenUnlockResult = .none
+
     // MARK: Convenience
 
     private var isWin: Bool { viewModel.gameState == .won }
@@ -73,6 +78,25 @@ struct EndOfLevelView: View {
     @State private var statsOpacity:     Double   = 0
     @State private var buttonsOpacity:   Double   = 0
     @State private var particlesActive:  Bool     = false
+
+    // MARK: Specimen Animation State
+
+    /// Opacity of the "?" silhouette in the new-discovery state.
+    /// Starts at 1.0 and fades to 0 when the burst fires.
+    @State private var specimenSilhouetteOpacity: Double = 1.0
+
+    /// Scale and opacity of the specimen image as it springs in during the burst.
+    @State private var specimenRevealScale: CGFloat = 0
+    @State private var specimenRevealOpacity: Double = 0
+
+    /// Opacity of the "New specimen discovered!" label and specimen name.
+    @State private var discoveryBadgeOpacity: Double = 0
+
+    /// Opacity of the rare biome specimen section (scales from 0→1 via spring).
+    @State private var rareRevealOpacity: Double = 0
+
+    /// Opacity of the "RARE specimen discovered!" label and rare name.
+    @State private var rareBadgeOpacity: Double = 0
 
     /// Interpolated score value, updated each frame while scoreProgress animates.
     private var displayedScore: Int {
@@ -221,7 +245,13 @@ struct EndOfLevelView: View {
             // ── Stats row ──────────────────────────────────────────────────
             winStatsRow
                 .opacity(statsOpacity)
-                .padding(.bottom, 18)
+                .padding(.bottom, 14)
+
+            // ── Specimen area ───────────────────────────────────────────────
+            // Fades in with stats. Internal state drives which of three sub-states renders.
+            specimenSection
+                .opacity(statsOpacity)
+                .padding(.bottom, 14)
 
             // ── Buttons ────────────────────────────────────────────────────
             buttonRow
@@ -436,6 +466,135 @@ struct EndOfLevelView: View {
         }
     }
 
+    // MARK: - Specimen Section
+
+    /// Warm brown used for muted specimen text and the "?" silhouette tint.
+    private let specimenBrown = Color(red: 0.55, green: 0.35, blue: 0.18)
+    /// Gold used for discovery badges and shimmer.
+    private let specimenGold  = Color(red: 1.0,  green: 0.843, blue: 0.0)
+
+    @ViewBuilder
+    private var specimenSection: some View {
+        switch specimenUnlockResult {
+
+        // ── State 1: < 3 stars — quiet teaser ──────────────────────────────
+        case .none:
+            VStack(spacing: 5) {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(specimenBrown.opacity(0.18))
+                    .frame(width: 48, height: 48)
+                    .overlay(
+                        Text("?")
+                            .font(.system(size: 22, weight: .bold, design: .rounded))
+                            .foregroundStyle(specimenBrown.opacity(0.28))
+                    )
+                Text("???")
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                    .foregroundStyle(specimenBrown.opacity(0.28))
+            }
+
+        // ── State 3: already collected — static confirmation ────────────────
+        case .alreadyCollected(let specimen):
+            VStack(spacing: 5) {
+                Image(specimen.imageName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 48, height: 48)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                Text(specimen.name)
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                    .foregroundStyle(specimenBrown)
+            }
+
+        // ── State 2: new discovery — burst reveal animation ─────────────────
+        case .newDiscovery(let specimen, let rare):
+            VStack(spacing: 6) {
+
+                // ── Level specimen burst ─────────────────────────────────
+                ZStack {
+                    // Golden shimmer radiates out from the center during reveal
+                    Circle()
+                        .fill(specimenGold.opacity(0.35))
+                        .frame(width: 72, height: 72)
+                        .blur(radius: 14)
+                        .opacity(specimenRevealOpacity * 0.70)
+
+                    // "?" silhouette — fades out as specimen appears
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(specimenBrown.opacity(0.18))
+                        .frame(width: 48, height: 48)
+                        .overlay(
+                            Text("?")
+                                .font(.system(size: 22, weight: .bold, design: .rounded))
+                                .foregroundStyle(specimenBrown.opacity(0.28))
+                        )
+                        .opacity(specimenSilhouetteOpacity)
+
+                    // Specimen image springs in from center
+                    Image(specimen.imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 48, height: 48)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .scaleEffect(specimenRevealScale)
+                        .opacity(specimenRevealOpacity)
+                }
+                .frame(width: 80, height: 64)
+
+                // "New specimen discovered!" fades in after burst
+                Text("New specimen discovered!")
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                    .foregroundStyle(specimenGold)
+                    .shadow(color: specimenGold.opacity(0.50), radius: 4, x: 0, y: 0)
+                    .opacity(discoveryBadgeOpacity)
+
+                // Specimen name
+                Text(specimen.name)
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                    .foregroundStyle(specimenBrown)
+                    .opacity(discoveryBadgeOpacity)
+
+                // ── Rare biome specimen (if applicable) ──────────────────
+                if let rare = rare {
+                    Divider()
+                        .overlay(Color.white.opacity(0.15))
+                        .padding(.vertical, 4)
+                        .opacity(rareRevealOpacity)
+
+                    ZStack {
+                        // Larger golden shimmer for the rare reveal
+                        Circle()
+                            .fill(specimenGold.opacity(0.45))
+                            .frame(width: 90, height: 90)
+                            .blur(radius: 18)
+                            .opacity(rareRevealOpacity)
+
+                        Image(rare.imageName)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 60, height: 60)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .scaleEffect(rareRevealOpacity > 0.01 ? 1.0 : 0.2)
+                            .opacity(rareRevealOpacity)
+                            .animation(.spring(response: 0.50, dampingFraction: 0.52), value: rareRevealOpacity)
+                    }
+                    .frame(width: 90, height: 76)
+
+                    Text("RARE specimen discovered!")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundStyle(specimenGold)
+                        .shadow(color: specimenGold.opacity(0.55), radius: 6, x: 0, y: 0)
+                        .opacity(rareBadgeOpacity)
+
+                    Text(rare.name)
+                        .font(.system(size: 11, weight: .medium, design: .rounded))
+                        .foregroundStyle(specimenBrown)
+                        .opacity(rareBadgeOpacity)
+                }
+            }
+        }
+    }
+
     // MARK: - Helpers
 
     private func miniStat(label: String, value: String) -> some View {
@@ -559,6 +718,46 @@ struct EndOfLevelView: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.50) {
             withAnimation(.easeInOut(duration: 0.30)) {
                 buttonsOpacity = 1.0
+            }
+        }
+
+        // ── Specimen reveal (new discovery only) ────────────────────────────
+        // Burst starts 0.5 s after score lands (3.3 + 0.5 = 3.8 s).
+        guard case .newDiscovery(_, let rare) = specimenUnlockResult else { return }
+
+        // "?" fades out while specimen springs in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.80) {
+            withAnimation(.easeOut(duration: 0.28)) {
+                specimenSilhouetteOpacity = 0.0
+            }
+            withAnimation(.spring(response: 0.42, dampingFraction: 0.52)) {
+                specimenRevealScale = 1.0
+            }
+            withAnimation(.easeOut(duration: 0.40)) {
+                specimenRevealOpacity = 1.0
+            }
+        }
+
+        // "New specimen discovered!" + name fade in at 4.4 s
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4.40) {
+            withAnimation(.easeInOut(duration: 0.35)) {
+                discoveryBadgeOpacity = 1.0
+            }
+        }
+
+        // Rare biome specimen reveal (if applicable) — starts at 5.7 s
+        guard rare != nil else { return }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.70) {
+            withAnimation(.easeOut(duration: 0.45)) {
+                rareRevealOpacity = 1.0
+            }
+        }
+
+        // "RARE specimen discovered!" + name fade in at 6.3 s
+        DispatchQueue.main.asyncAfter(deadline: .now() + 6.30) {
+            withAnimation(.easeInOut(duration: 0.35)) {
+                rareBadgeOpacity = 1.0
             }
         }
     }

@@ -124,7 +124,7 @@ struct ContentView: View {
                 }
             )
         }
-        .onChange(of: selectedLevel) { newLevel in
+        .onChange(of: selectedLevel) { _, newLevel in
             guard
                 let level  = newLevel,
                 let b      = biome,

@@ -375,70 +375,151 @@ private extension BiomeMechanicView {
 
     var frozenMirrorsPage1: some View {
         pageShell(title: "Linked Tiles", isFirst: true) {
-            HStack(alignment: .center, spacing: 20) {
-                VStack(spacing: 6) {
-                    BMTMiniTile(state: .linkedDisplaying(signal: 2), theme: theme, tileSize: 68)
-                    Text("Tile A")
-                        .font(.system(size: 11, weight: .medium, design: .rounded))
-                        .foregroundColor(parchmentBrown.opacity(0.50))
-                    Text("shows B's count")
-                        .font(.system(size: 10, design: .rounded))
-                        .foregroundColor(parchmentBrown.opacity(0.40))
+            VStack(spacing: 18) {
+                // Two tiles connected by a line — Tile A shows "2", Tile B shows "1"
+                HStack(alignment: .center, spacing: 0) {
+                    VStack(spacing: 6) {
+                        BMTMiniTile(state: .linkedDisplaying(signal: 2), theme: theme, tileSize: 68)
+                        Text("Tile A")
+                            .font(.system(size: 11, weight: .semibold, design: .rounded))
+                            .foregroundColor(parchmentBrown.opacity(0.60))
+                        Text("displays \"2\"")
+                            .font(.system(size: 10, design: .rounded))
+                            .foregroundColor(parchmentBrown.opacity(0.42))
+                    }
+                    // Visual link line
+                    Rectangle()
+                        .fill(theme.signalColor.opacity(0.45))
+                        .frame(width: 36, height: 2)
+                    VStack(spacing: 6) {
+                        BMTMiniTile(state: .linkedDisplaying(signal: 1), theme: theme, tileSize: 68)
+                        Text("Tile B")
+                            .font(.system(size: 11, weight: .semibold, design: .rounded))
+                            .foregroundColor(parchmentBrown.opacity(0.60))
+                        Text("displays \"1\"")
+                            .font(.system(size: 10, design: .rounded))
+                            .foregroundColor(parchmentBrown.opacity(0.42))
+                    }
                 }
 
-                VStack(spacing: 4) {
-                    Image(systemName: "arrow.left.arrow.right")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(theme.signalColor.opacity(0.70))
-                    Text("linked")
-                        .font(.system(size: 10, design: .rounded))
-                        .foregroundColor(parchmentBrown.opacity(0.40))
-                }
+                // Actual neighbor counts — dotted-border boxes
+                HStack(alignment: .top, spacing: 16) {
+                    VStack(spacing: 4) {
+                        Text("Tile A's neighbors")
+                            .font(.system(size: 10, weight: .semibold, design: .rounded))
+                            .foregroundColor(parchmentBrown.opacity(0.60))
+                        Text("1 hazard")
+                            .font(.system(size: 12, weight: .bold, design: .rounded))
+                            .foregroundColor(Color(red: 0xC0/255, green: 0x60/255, blue: 0x3A/255))
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 9)
+                    .background(
+                        RoundedRectangle(cornerRadius: 6)
+                            .strokeBorder(parchmentBrown.opacity(0.28),
+                                          style: StrokeStyle(lineWidth: 1.5, dash: [5, 3]))
+                    )
 
-                VStack(spacing: 6) {
-                    BMTMiniTile(state: .linkedDisplaying(signal: 2), theme: theme, tileSize: 68)
-                    Text("Tile B")
-                        .font(.system(size: 11, weight: .medium, design: .rounded))
-                        .foregroundColor(parchmentBrown.opacity(0.50))
-                    Text("shows A's count")
-                        .font(.system(size: 10, design: .rounded))
-                        .foregroundColor(parchmentBrown.opacity(0.40))
+                    VStack(spacing: 4) {
+                        Text("Tile B's neighbors")
+                            .font(.system(size: 10, weight: .semibold, design: .rounded))
+                            .foregroundColor(parchmentBrown.opacity(0.60))
+                        Text("2 hazards")
+                            .font(.system(size: 12, weight: .bold, design: .rounded))
+                            .foregroundColor(Color(red: 0xC0/255, green: 0x60/255, blue: 0x3A/255))
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 9)
+                    .background(
+                        RoundedRectangle(cornerRadius: 6)
+                            .strokeBorder(parchmentBrown.opacity(0.28),
+                                          style: StrokeStyle(lineWidth: 1.5, dash: [5, 3]))
+                    )
                 }
             }
         } bodyText: {
-            Text("Linked tiles are paired — each shows the OTHER tile's signal, not its own.")
+            Text("Linked tiles swap signals. Each tile shows its PARTNER's count, not its own.")
         }
     }
 
     var frozenMirrorsPage2: some View {
-        pageShell(title: "Reading the Pair", isLast: true) {
+        pageShell(title: "How to Read Them", isLast: true) {
             VStack(spacing: 16) {
-                // Tile B and its actual neighborhood
-                HStack(alignment: .center, spacing: 16) {
-                    BMTMiniGrid(rows: 3, cols: 3, tileSize: 52, spacing: 4) { row, col in
-                        if row == 1 && col == 1 {
-                            // Tile B — the partner
-                            BMTMiniTile(state: .linkedDisplaying(signal: 2), theme: theme, tileSize: 52)
-                        } else if (row == 0 && col == 0) || (row == 2 && col == 2) {
-                            // Two actual hazard neighbors
-                            BMTMiniTile(state: .hidden, theme: theme, tileSize: 52, hazardHint: true)
-                        } else {
-                            BMTMiniTile(state: .hidden, theme: theme, tileSize: 52)
+                // Both tiles side by side with arrows showing the cross-reference
+                HStack(alignment: .center, spacing: 12) {
+                    VStack(spacing: 6) {
+                        BMTMiniTile(state: .linkedDisplaying(signal: 2), theme: theme, tileSize: 64)
+                        Text("Tile A")
+                            .font(.system(size: 10, weight: .semibold, design: .rounded))
+                            .foregroundColor(parchmentBrown.opacity(0.55))
+                        Text("shows \"2\"")
+                            .font(.system(size: 10, design: .rounded))
+                            .foregroundColor(parchmentBrown.opacity(0.42))
+                    }
+
+                    // Cross-reference arrows
+                    VStack(spacing: 8) {
+                        HStack(spacing: 4) {
+                            Text("B's count")
+                                .font(.system(size: 9, design: .rounded))
+                                .foregroundColor(parchmentBrown.opacity(0.48))
+                            Image(systemName: "arrow.left")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(theme.signalColor.opacity(0.85))
+                        }
+                        HStack(spacing: 4) {
+                            Image(systemName: "arrow.right")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(theme.signalColor.opacity(0.85))
+                            Text("A's count")
+                                .font(.system(size: 9, design: .rounded))
+                                .foregroundColor(parchmentBrown.opacity(0.48))
                         }
                     }
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Tile B's neighbors")
-                            .font(.system(size: 12, weight: .semibold, design: .rounded))
-                            .foregroundColor(parchmentBrown.opacity(0.70))
-                        Text("2 hazards nearby\n→ signal = 2 ✓")
-                            .font(.system(size: 11, design: .rounded))
+
+                    VStack(spacing: 6) {
+                        BMTMiniTile(state: .linkedDisplaying(signal: 1), theme: theme, tileSize: 64)
+                        Text("Tile B")
+                            .font(.system(size: 10, weight: .semibold, design: .rounded))
                             .foregroundColor(parchmentBrown.opacity(0.55))
-                            .lineSpacing(2)
+                        Text("shows \"1\"")
+                            .font(.system(size: 10, design: .rounded))
+                            .foregroundColor(parchmentBrown.opacity(0.42))
                     }
                 }
+
+                // Swap summary table
+                VStack(spacing: 6) {
+                    HStack(spacing: 6) {
+                        Text("A displays 2")
+                            .font(.system(size: 11, design: .rounded))
+                            .foregroundColor(parchmentBrown.opacity(0.60))
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 10))
+                            .foregroundColor(theme.signalColor)
+                        Text("B has 2 hazards nearby")
+                            .font(.system(size: 11, weight: .semibold, design: .rounded))
+                            .foregroundColor(parchmentBrown.opacity(0.80))
+                    }
+                    HStack(spacing: 6) {
+                        Text("B displays 1")
+                            .font(.system(size: 11, design: .rounded))
+                            .foregroundColor(parchmentBrown.opacity(0.60))
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 10))
+                            .foregroundColor(theme.signalColor)
+                        Text("A has 1 hazard nearby")
+                            .font(.system(size: 11, weight: .semibold, design: .rounded))
+                            .foregroundColor(parchmentBrown.opacity(0.80))
+                    }
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .background(parchmentBrown.opacity(0.08))
+                .cornerRadius(8)
             }
         } bodyText: {
-            Text("Look for the dot in the corner. Read the number as if you were standing at the partner tile.")
+            Text("When you see a number on a linked tile, think: this count belongs to the OTHER tile's neighborhood. Look for the dot in the corner to spot linked pairs.")
         }
     }
 }
@@ -453,43 +534,69 @@ private extension BiomeMechanicView {
 
     var ruinsPage1: some View {
         pageShell(title: "Locked Tiles", isFirst: true, isLast: true) {
-            HStack(alignment: .center, spacing: 28) {
-                // Locked: dimmed center with lock icon surrounded by hidden tiles
-                VStack(spacing: 8) {
-                    BMTMiniGrid(rows: 3, cols: 3, tileSize: 48, spacing: 4) { row, col in
+            // Three-state progression: locked → partially revealed → unlocked
+            HStack(alignment: .top, spacing: 10) {
+
+                // State 1: All neighbors hidden, needs 3
+                VStack(spacing: 6) {
+                    BMTMiniGrid(rows: 3, cols: 3, tileSize: 40, spacing: 3) { row, col in
                         if row == 1 && col == 1 {
-                            BMTMiniTile(state: .locked, theme: theme, tileSize: 48)
+                            BMTMiniTile(state: .lockedWithCount(3), theme: theme, tileSize: 40)
                         } else {
-                            BMTMiniTile(state: .hidden, theme: theme, tileSize: 48)
+                            BMTMiniTile(state: .hidden, theme: theme, tileSize: 40)
                         }
                     }
-                    Text("Locked")
-                        .font(.system(size: 11, weight: .medium, design: .rounded))
+                    Text("3 neighbors\nneeded")
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
                         .foregroundColor(parchmentBrown.opacity(0.55))
+                        .multilineTextAlignment(.center)
                 }
 
                 Image(systemName: "arrow.right")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(parchmentBrown.opacity(0.35))
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(parchmentBrown.opacity(0.30))
+                    .padding(.top, 56)
 
-                // Unlocked: revealed surrounding tiles unlock center
-                VStack(spacing: 8) {
-                    BMTMiniGrid(rows: 3, cols: 3, tileSize: 48, spacing: 4) { row, col in
+                // State 2: 2 neighbors revealed, 1 more needed
+                VStack(spacing: 6) {
+                    BMTMiniGrid(rows: 3, cols: 3, tileSize: 40, spacing: 3) { row, col in
                         if row == 1 && col == 1 {
-                            BMTMiniTile(state: .revealed(signal: 1), theme: theme, tileSize: 48)
-                        } else if row == 0 || (row == 1 && col == 0) {
-                            BMTMiniTile(state: .revealed(signal: nil), theme: theme, tileSize: 48)
+                            BMTMiniTile(state: .lockedWithCount(1), theme: theme, tileSize: 40)
+                        } else if (row == 0 && col == 0) || (row == 0 && col == 1) {
+                            BMTMiniTile(state: .revealed(signal: nil), theme: theme, tileSize: 40)
                         } else {
-                            BMTMiniTile(state: .hidden, theme: theme, tileSize: 48)
+                            BMTMiniTile(state: .hidden, theme: theme, tileSize: 40)
                         }
                     }
-                    Text("Unlocked")
-                        .font(.system(size: 11, weight: .medium, design: .rounded))
+                    Text("2 of 3\nrevealed")
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
                         .foregroundColor(parchmentBrown.opacity(0.55))
+                        .multilineTextAlignment(.center)
+                }
+
+                Image(systemName: "arrow.right")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(parchmentBrown.opacity(0.30))
+                    .padding(.top, 56)
+
+                // State 3: Unlocked — tile now scannable
+                VStack(spacing: 6) {
+                    BMTMiniGrid(rows: 3, cols: 3, tileSize: 40, spacing: 3) { row, col in
+                        if row == 1 && col == 1 {
+                            BMTMiniTile(state: .revealed(signal: 1), theme: theme, tileSize: 40)
+                        } else if row == 0 || (row == 1 && col == 0) || (row == 1 && col == 2) {
+                            BMTMiniTile(state: .revealed(signal: nil), theme: theme, tileSize: 40)
+                        } else {
+                            BMTMiniTile(state: .hidden, theme: theme, tileSize: 40)
+                        }
+                    }
+                    Text("Unlocked!")
+                        .font(.system(size: 10, weight: .semibold, design: .rounded))
+                        .foregroundColor(theme.signalColor)
                 }
             }
         } bodyText: {
-            Text("Locked tiles won't open until enough of their neighbors are revealed. Plan your path to unlock them.")
+            Text("Locked tiles show a number — that's how many neighbors you need to reveal to unlock them. Plan your path carefully.")
         }
     }
 }
@@ -504,48 +611,54 @@ private extension BiomeMechanicView {
 
     var theUndersidePage1: some View {
         pageShell(title: "Inverted Signals", isFirst: true, isLast: true) {
-            HStack(alignment: .center, spacing: 28) {
-                // Normal: center "1" — 1 hazard neighbor highlighted
-                VStack(spacing: 8) {
-                    BMTMiniGrid(rows: 3, cols: 3, tileSize: 48, spacing: 4) { row, col in
-                        if row == 1 && col == 1 {
-                            BMTMiniTile(state: .revealed(signal: 1), theme: theme, tileSize: 48)
-                        } else if row == 0 && col == 2 {
-                            BMTMiniTile(state: .hidden, theme: theme, tileSize: 48, hazardHint: true)
-                        } else {
-                            BMTMiniTile(state: .revealed(signal: nil), theme: theme, tileSize: 48)
-                        }
+            VStack(spacing: 14) {
+                // 3×3 grid: center tile shows "5", 5 revealed safe neighbors, 3 hazard neighbors
+                // Hazards at corners (0,0), (0,2), (2,1) — rest are safe revealed tiles
+                BMTMiniGrid(rows: 3, cols: 3, tileSize: 52, spacing: 4) { row, col in
+                    if row == 1 && col == 1 {
+                        // Center — inverted tile counting 5 safe neighbors
+                        BMTMiniTile(state: .revealed(signal: 5), theme: theme, tileSize: 52)
+                    } else if (row == 0 && col == 0) || (row == 0 && col == 2) || (row == 2 && col == 1) {
+                        // 3 hazard neighbors — amber tint
+                        BMTMiniTile(state: .hidden, theme: theme, tileSize: 52, hazardHint: true)
+                    } else {
+                        // 5 safe neighbors — shown as revealed tiles
+                        BMTMiniTile(state: .revealed(signal: nil), theme: theme, tileSize: 52)
                     }
-                    Text("Normal: 1 hazard")
-                        .font(.system(size: 10, design: .rounded))
-                        .foregroundColor(parchmentBrown.opacity(0.50))
                 }
 
-                Image(systemName: "arrow.right")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(parchmentBrown.opacity(0.35))
-
-                // Inverted: center "5" — 5 safe neighbors highlighted in green
-                VStack(spacing: 8) {
-                    BMTMiniGrid(rows: 3, cols: 3, tileSize: 48, spacing: 4) { row, col in
-                        if row == 1 && col == 1 {
-                            // Shows "5" — counts safe neighbors
-                            BMTMiniTile(state: .revealed(signal: 5), theme: theme, tileSize: 48)
-                        } else if row == 0 && col == 2 {
-                            // The one hazard (not highlighted)
-                            BMTMiniTile(state: .hidden, theme: theme, tileSize: 48)
-                        } else {
-                            // Safe neighbors — highlight in signal colour
-                            BMTMiniTile(state: .hidden, theme: theme, tileSize: 48, safeHighlight: true)
+                // Comparison line
+                VStack(spacing: 5) {
+                    HStack(spacing: 6) {
+                        Text("Normal signal:")
+                            .font(.system(size: 11, design: .rounded))
+                            .foregroundColor(parchmentBrown.opacity(0.45))
+                        Text("counts hazards → would show 3")
+                            .font(.system(size: 11, design: .rounded))
+                            .foregroundColor(parchmentBrown.opacity(0.45))
+                            .strikethrough(true, color: parchmentBrown.opacity(0.35))
+                    }
+                    HStack(spacing: 6) {
+                        Text("The Underside:")
+                            .font(.system(size: 11, weight: .semibold, design: .rounded))
+                            .foregroundColor(parchmentBrown.opacity(0.80))
+                        HStack(spacing: 4) {
+                            Text("counts SAFE tiles → shows")
+                                .font(.system(size: 11, design: .rounded))
+                                .foregroundColor(parchmentBrown.opacity(0.80))
+                            Text("5")
+                                .font(.system(size: 14, weight: .bold, design: .rounded))
+                                .foregroundColor(theme.signalColor)
                         }
                     }
-                    Text("Inverted: 5 safe")
-                        .font(.system(size: 10, design: .rounded))
-                        .foregroundColor(parchmentBrown.opacity(0.50))
                 }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .background(parchmentBrown.opacity(0.08))
+                .cornerRadius(8)
             }
         } bodyText: {
-            Text("Signals are inverted here. Numbers count **safe** neighbors, not hazards. High numbers mean safety.")
+            Text("Here, signals count safe neighbors instead of hazards. A high number means SAFETY — the opposite of what you're used to.")
         }
     }
 }
@@ -560,81 +673,66 @@ private extension BiomeMechanicView {
 
     var coralBasinPage1: some View {
         pageShell(title: "Sonar Tiles", isFirst: true, isLast: true) {
-            VStack(spacing: 12) {
-                // Sonar tile in center with 4 directional labels
-                ZStack {
-                    // Central sonar tile
-                    BMTMiniTile(state: .sonar(n: 1, s: 0, e: 2, w: 0), theme: theme, tileSize: 72)
+            // Cross-shaped board: sonar tile in center with tiles along each arm.
+            // N arm: safe → hazard   E arm: hazard   S arm: hazard   W arm: safe
+            // Total hazards in all directions = 3  →  sonar tile shows "3"
+            let ts: CGFloat = 36
+            let sp: CGFloat = 3
+            let pulseColor = theme.signalColor.opacity(0.55)
 
-                    // Direction arrows + counts
-                    // North
-                    VStack {
-                        HStack(spacing: 4) {
-                            Image(systemName: "arrow.up")
-                                .font(.system(size: 9, weight: .bold))
-                            Text("N:1")
-                                .font(.system(size: 10, weight: .bold, design: .rounded))
-                        }
-                        .foregroundColor(theme.signalColor)
-                        .padding(4)
-                        .background(parchmentBrown.opacity(0.15))
-                        .cornerRadius(4)
-                        .offset(y: -58)
-                        Spacer()
-                    }
+            return VStack(spacing: 0) {
+                // N label
+                Text("N")
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .foregroundColor(parchmentBrown.opacity(0.45))
+                    .padding(.bottom, 3)
 
-                    // South
-                    VStack {
-                        Spacer()
-                        HStack(spacing: 4) {
-                            Image(systemName: "arrow.down")
-                                .font(.system(size: 9, weight: .bold))
-                            Text("S:0")
-                                .font(.system(size: 10, weight: .bold, design: .rounded))
-                        }
-                        .foregroundColor(parchmentBrown.opacity(0.45))
-                        .padding(4)
-                        .background(parchmentBrown.opacity(0.10))
-                        .cornerRadius(4)
-                        .offset(y: 58)
-                    }
-
-                    // West
-                    HStack {
-                        HStack(spacing: 4) {
-                            Image(systemName: "arrow.left")
-                                .font(.system(size: 9, weight: .bold))
-                            Text("W:0")
-                                .font(.system(size: 10, weight: .bold, design: .rounded))
-                        }
-                        .foregroundColor(parchmentBrown.opacity(0.45))
-                        .padding(4)
-                        .background(parchmentBrown.opacity(0.10))
-                        .cornerRadius(4)
-                        .offset(x: -68)
-                        Spacer()
-                    }
-
-                    // East
-                    HStack {
-                        Spacer()
-                        HStack(spacing: 4) {
-                            Text("E:2")
-                                .font(.system(size: 10, weight: .bold, design: .rounded))
-                            Image(systemName: "arrow.right")
-                                .font(.system(size: 9, weight: .bold))
-                        }
-                        .foregroundColor(theme.signalColor)
-                        .padding(4)
-                        .background(parchmentBrown.opacity(0.15))
-                        .cornerRadius(4)
-                        .offset(x: 68)
-                    }
+                // N arm — 2 tiles
+                VStack(spacing: sp) {
+                    BMTMiniTile(state: .hidden, theme: theme, tileSize: ts, hazardHint: true) // hazard
+                    BMTMiniTile(state: .revealed(signal: nil), theme: theme, tileSize: ts)    // safe
                 }
-                .frame(width: 220, height: 160)
+
+                // Horizontal pulse line north
+                Rectangle().fill(pulseColor).frame(width: 2, height: 3)
+
+                // Center row: W label · W arm · pulse · sonar · pulse · E arm · E label
+                HStack(spacing: 0) {
+                    Text("W")
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .foregroundColor(parchmentBrown.opacity(0.45))
+                        .frame(width: 18)
+                    // W arm — 1 safe tile
+                    BMTMiniTile(state: .revealed(signal: nil), theme: theme, tileSize: ts)
+                    Rectangle().fill(pulseColor).frame(width: 3, height: 2)
+                    // Sonar center — single combined total "3"
+                    BMTMiniTile(state: .sonarTotal(3), theme: theme, tileSize: ts + 6)
+                    Rectangle().fill(pulseColor).frame(width: 3, height: 2)
+                    // E arm — 1 hazard tile
+                    BMTMiniTile(state: .hidden, theme: theme, tileSize: ts, hazardHint: true)
+                    Text("E")
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .foregroundColor(parchmentBrown.opacity(0.45))
+                        .frame(width: 18)
+                }
+
+                // Vertical pulse line south
+                Rectangle().fill(pulseColor).frame(width: 2, height: 3)
+
+                // S arm — 2 tiles
+                VStack(spacing: sp) {
+                    BMTMiniTile(state: .hidden, theme: theme, tileSize: ts, hazardHint: true) // hazard
+                    BMTMiniTile(state: .revealed(signal: nil), theme: theme, tileSize: ts)    // safe
+                }
+
+                // S label
+                Text("S")
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .foregroundColor(parchmentBrown.opacity(0.45))
+                    .padding(.top, 3)
             }
         } bodyText: {
-            Text("Sonar tiles count hazards in four directions — north, south, east, west. Use them to narrow down positions.")
+            Text("Sonar tiles scan in four directions — north, south, east, west. The number is the total hazard count across all four lines. Watch the pulse to see which directions are being scanned.")
         }
     }
 }
@@ -696,34 +794,41 @@ private extension BiomeMechanicView {
     var theDeltaPage1: some View {
         pageShell(title: "The Confluence", isFirst: true, isLast: true) {
             // Mini-board showing several different special tile types together
-            VStack(spacing: 4) {
-                BMTMiniGrid(rows: 3, cols: 4, tileSize: 52, spacing: 5) { row, col in
+            // Mini-board: all mechanics co-existing in one grid.
+            // Row 0: fogged tile · hidden · linked A · linked B (connected pair)
+            // Row 1: revealed · locked(needs 2) · revealed · hazard
+            // Row 2: sonar(total 2) · revealed · revealed · hidden
+            VStack(spacing: 6) {
+                BMTMiniGrid(rows: 3, cols: 4, tileSize: 48, spacing: 4) { row, col in
                     switch (row, col) {
-                    case (0, 0): BMTMiniTile(state: .fogged(rangeLow: 1, rangeHigh: 3), theme: theme, tileSize: 52)
-                    case (0, 1): BMTMiniTile(state: .revealed(signal: 2), theme: theme, tileSize: 52)
-                    case (0, 2): BMTMiniTile(state: .linkedDisplaying(signal: 1), theme: theme, tileSize: 52)
-                    case (0, 3): BMTMiniTile(state: .hidden, theme: theme, tileSize: 52)
-                    case (1, 0): BMTMiniTile(state: .revealed(signal: nil), theme: theme, tileSize: 52)
-                    case (1, 1): BMTMiniTile(state: .locked, theme: theme, tileSize: 52)
-                    case (1, 2): BMTMiniTile(state: .revealed(signal: 1), theme: theme, tileSize: 52)
-                    case (1, 3): BMTMiniTile(state: .hidden, theme: theme, tileSize: 52, hazardHint: true)
-                    case (2, 0): BMTMiniTile(state: .sonar(n: 0, s: 1, e: 1, w: 0), theme: theme, tileSize: 52)
-                    case (2, 1): BMTMiniTile(state: .revealed(signal: nil), theme: theme, tileSize: 52)
-                    case (2, 2): BMTMiniTile(state: .revealed(signal: 2), theme: theme, tileSize: 52)
-                    default:     BMTMiniTile(state: .hidden, theme: theme, tileSize: 52)
+                    // Row 0
+                    case (0, 0): BMTMiniTile(state: .fogged(rangeLow: 2, rangeHigh: 3), theme: theme, tileSize: 48)
+                    case (0, 1): BMTMiniTile(state: .hidden, theme: theme, tileSize: 48)
+                    case (0, 2): BMTMiniTile(state: .linkedDisplaying(signal: 2), theme: theme, tileSize: 48)
+                    case (0, 3): BMTMiniTile(state: .linkedDisplaying(signal: 1), theme: theme, tileSize: 48)
+                    // Row 1
+                    case (1, 0): BMTMiniTile(state: .revealed(signal: nil), theme: theme, tileSize: 48)
+                    case (1, 1): BMTMiniTile(state: .lockedWithCount(2), theme: theme, tileSize: 48)
+                    case (1, 2): BMTMiniTile(state: .revealed(signal: 1), theme: theme, tileSize: 48)
+                    case (1, 3): BMTMiniTile(state: .hidden, theme: theme, tileSize: 48, hazardHint: true)
+                    // Row 2
+                    case (2, 0): BMTMiniTile(state: .sonarTotal(2), theme: theme, tileSize: 48)
+                    case (2, 1): BMTMiniTile(state: .revealed(signal: nil), theme: theme, tileSize: 48)
+                    case (2, 2): BMTMiniTile(state: .revealed(signal: 2), theme: theme, tileSize: 48)
+                    default:     BMTMiniTile(state: .hidden, theme: theme, tileSize: 48)
                     }
                 }
-                // Legend row
-                HStack(spacing: 12) {
+                // Compact legend
+                HStack(spacing: 14) {
                     legendItem(symbol: "~", label: "Fog")
                     legendItem(symbol: "◈", label: "Linked")
                     legendItem(symbol: "🔒", label: "Locked")
                     legendItem(symbol: "⊕", label: "Sonar")
                 }
-                .padding(.top, 10)
+                .padding(.top, 8)
             }
         } bodyText: {
-            Text("The final chapter. Multiple mechanics combine in each level. Use everything you've learned.")
+            Text("The final chapter. All the mechanics you've learned appear together. Trust your instincts and take it slow.")
         }
     }
 
@@ -747,9 +852,11 @@ private enum BMTTileState {
     case revealed(signal: Int?)
     case tagged
     case locked
+    case lockedWithCount(Int)                       // locked tile showing neighbors-needed count
     case fogged(rangeLow: Int, rangeHigh: Int)
     case linkedDisplaying(signal: Int)
     case sonar(n: Int, s: Int, e: Int, w: Int)
+    case sonarTotal(Int)                            // sonar tile showing single combined total
 }
 
 // MARK: - BMTMiniTile
@@ -789,12 +896,16 @@ private struct BMTMiniTile: View {
                 taggedView
             case .locked:
                 lockedView
+            case .lockedWithCount(let n):
+                lockedWithCountView(n: n)
             case .fogged(let lo, let hi):
                 foggedView(low: lo, high: hi)
             case .linkedDisplaying(let sig):
                 linkedView(signal: sig)
             case .sonar(let n, let s, let e, let w):
                 sonarView(n: n, s: s, e: e, w: w)
+            case .sonarTotal(let total):
+                sonarTotalView(total: total)
             }
         }
         .frame(width: tileSize, height: tileSize)
@@ -902,6 +1013,47 @@ private struct BMTMiniTile: View {
         Image(systemName: "lock.fill")
             .font(.system(size: tileSize * 0.35, weight: .medium))
             .foregroundColor(.white.opacity(0.60))
+    }
+
+    // MARK: Locked With Count
+
+    @ViewBuilder
+    private func lockedWithCountView(n: Int) -> some View {
+        Image(theme.tileTextureName)
+            .resizable()
+            .scaledToFill()
+            .frame(width: tileSize, height: tileSize)
+            .scaleEffect(1.35)
+            .clipShape(shape)
+            .opacity(0.35)
+        shape.fill(Color.black.opacity(0.30))
+        shape.strokeBorder(Color.white.opacity(0.12), lineWidth: 0.5)
+        VStack(spacing: 0) {
+            Image(systemName: "lock.fill")
+                .font(.system(size: tileSize * 0.20, weight: .medium))
+                .foregroundColor(.white.opacity(0.55))
+            Text("\(n)")
+                .font(.system(size: tileSize * 0.32, weight: .bold, design: .rounded))
+                .foregroundColor(.white.opacity(0.85))
+        }
+    }
+
+    // MARK: Sonar Total (single combined count)
+
+    @ViewBuilder
+    private func sonarTotalView(total: Int) -> some View {
+        Image(theme.tileTextureName)
+            .resizable()
+            .scaledToFill()
+            .frame(width: tileSize, height: tileSize)
+            .scaleEffect(1.35)
+            .clipShape(shape)
+            .opacity(0.28)
+        shape.fill(theme.revealedOverlayColor.opacity(0.75))
+        shape.strokeBorder(theme.signalColor.opacity(0.70), lineWidth: 1.5)
+        Text("\(total)")
+            .font(.system(size: tileSize * 0.38, weight: .bold, design: .rounded))
+            .foregroundColor(theme.signalColor)
     }
 
     // MARK: Fogged

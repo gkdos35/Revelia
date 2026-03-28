@@ -440,7 +440,7 @@ private struct BiomeDustView: View {
 
     init(tintColor: Color) {
         self.tintColor = tintColor
-        var rng  = RoomSeededRandom(seed: 0xD1SPLAY)
+        var rng  = RoomSeededRandom(seed: 0xD15B1A4)
         var list = [RoomMoteData]()
         for i in 0..<8 {
             list.append(RoomMoteData(

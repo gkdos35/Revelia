@@ -285,7 +285,7 @@ private struct CabinetDustView: View {
     @State private var animating: Bool = false
 
     init() {
-        var rng  = CabinetSeededRandom(seed: 0xC4B1N3T)
+        var rng  = CabinetSeededRandom(seed: 0xC4B13E7)
         var list = [MoteData]()
         for i in 0..<9 {
             list.append(MoteData(

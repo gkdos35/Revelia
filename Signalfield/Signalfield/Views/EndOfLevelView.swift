@@ -98,6 +98,21 @@ struct EndOfLevelView: View {
     /// Opacity of the "RARE specimen discovered!" label and rare name.
     @State private var rareBadgeOpacity: Double = 0
 
+    // MARK: Watercolor Splash Animation State (floating specimen, new-discovery only)
+
+    /// Scale of the watercolor splash that expands from the specimen position on burst.
+    /// Animates 0 → 1 when the burst fires, then stays at 1 for the residual stain.
+    @State private var splashScale: CGFloat = 0
+    /// Opacity of the animated splash layer (rises then falls, leaving the stain behind).
+    @State private var splashOpacity: Double = 0
+    /// Opacity of the residual stain halo that remains after the splash fades.
+    @State private var splashStainOpacity: Double = 0
+
+    /// Matching set for the rare biome specimen splash (larger, more intense).
+    @State private var rareSplashScale: CGFloat = 0
+    @State private var rareSplashOpacity: Double = 0
+    @State private var rareSplashStainOpacity: Double = 0
+
     /// Interpolated score value, updated each frame while scoreProgress animates.
     private var displayedScore: Int {
         Int(scoreProgress * Double(max(viewModel.score, 0)))
@@ -143,7 +158,21 @@ struct EndOfLevelView: View {
                 .transition(.opacity)
             }
 
-            // 3. Collapsed pill — anchored to the bottom via Spacer.
+            // 3. Floating specimen — positioned to the right of the victory card near its top.
+            //    Independent of the card's VStack; lives in the same ZStack so it never
+            //    affects the card's layout. Only shown during win / expanded state.
+            //    Card is 340 pt wide, centered → right edge is 170 pt from screen center.
+            //    Gap = 14 pt + half of ~110 pt element = 55 pt → x offset of 239 pt.
+            //    y = -110 pt above center aligns the element with the upper card area.
+            if isWin && !isCollapsed {
+                floatingSpecimen
+                    .opacity(cardOpacity)
+                    .offset(x: 239, y: -110)
+                    .allowsHitTesting(false)
+                    .transition(.opacity)
+            }
+
+            // 4. Collapsed pill — anchored to the bottom via Spacer.
             VStack {
                 Spacer()
                 if isCollapsed {
@@ -244,12 +273,6 @@ struct EndOfLevelView: View {
 
             // ── Stats row ──────────────────────────────────────────────────
             winStatsRow
-                .opacity(statsOpacity)
-                .padding(.bottom, 14)
-
-            // ── Specimen area ───────────────────────────────────────────────
-            // Fades in with stats. Internal state drives which of three sub-states renders.
-            specimenSection
                 .opacity(statsOpacity)
                 .padding(.bottom, 14)
 
@@ -606,6 +629,149 @@ struct EndOfLevelView: View {
         }
     }
 
+    // MARK: - Floating Specimen (external to card)
+
+    /// Top-level floating specimen element rendered in the body ZStack, to the right
+    /// of the victory card.  Dispatches to one of three state-specific sub-views using
+    /// the same `if case` pattern as `specimenSection` to avoid Optional.none inference.
+    @ViewBuilder
+    private var floatingSpecimen: some View {
+        if case .newDiscovery(let specimen, let rare) = specimenUnlockResult {
+            floatingNewDiscoveryContent(specimen: specimen, rare: rare)
+        } else if case .alreadyCollected(let specimen) = specimenUnlockResult {
+            floatingAlreadyCollectedContent(specimen: specimen)
+        } else {
+            // State 1: < 3 stars — bare faint "?" only, no box, no label.
+            Text("?")
+                .font(.system(size: 34, weight: .bold, design: .rounded))
+                .foregroundStyle(specimenBrown.opacity(0.22))
+        }
+    }
+
+    /// State 2: new discovery — "?" fades into watercolor splash → specimen springs in.
+    @ViewBuilder
+    private func floatingNewDiscoveryContent(specimen: Specimen, rare: Specimen?) -> some View {
+        VStack(spacing: 4) {
+
+            // ── Regular specimen burst ───────────────────────────────────────
+            ZStack {
+                // Animated watercolor splash (expands on burst)
+                WatercolorSplashView(
+                    color: theme.signalColor,
+                    size: 80,
+                    scale: splashScale,
+                    opacity: splashOpacity
+                )
+                // Residual stain halo — appears as the splash fades, stays permanently
+                WatercolorSplashView(
+                    color: theme.signalColor,
+                    size: 70,
+                    scale: 1.0,
+                    opacity: splashStainOpacity
+                )
+                // "?" — faint initially, dissolves when burst fires
+                Text("?")
+                    .font(.system(size: 34, weight: .bold, design: .rounded))
+                    .foregroundStyle(specimenBrown.opacity(0.22))
+                    .opacity(specimenSilhouetteOpacity)
+                // Specimen image springs in from center
+                Image(specimen.imageName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 48, height: 48)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .scaleEffect(specimenRevealScale)
+                    .opacity(specimenRevealOpacity)
+            }
+            .frame(width: 80, height: 80)
+
+            // "New specimen discovered!" fades in after burst
+            Text("New specimen discovered!")
+                .font(.system(size: 11, weight: .semibold, design: .rounded))
+                .foregroundStyle(specimenGold)
+                .shadow(color: specimenGold.opacity(0.50), radius: 4, x: 0, y: 0)
+                .opacity(discoveryBadgeOpacity)
+
+            // Specimen name
+            Text(specimen.name)
+                .font(.system(size: 10, weight: .medium, design: .rounded))
+                .foregroundStyle(specimenBrown)
+                .opacity(discoveryBadgeOpacity)
+
+            // ── Rare biome specimen (if applicable) ──────────────────────────
+            if let rare = rare {
+                Spacer().frame(height: 10)
+
+                ZStack {
+                    // Larger, more intense splash for rare reveal
+                    WatercolorSplashView(
+                        color: theme.signalColor,
+                        size: 100,
+                        scale: rareSplashScale,
+                        opacity: rareSplashOpacity
+                    )
+                    // Rare residual stain
+                    WatercolorSplashView(
+                        color: theme.signalColor,
+                        size: 90,
+                        scale: 1.0,
+                        opacity: rareSplashStainOpacity
+                    )
+                    Image(rare.imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 60, height: 60)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .scaleEffect(rareRevealOpacity > 0.01 ? 1.0 : 0.2)
+                        .opacity(rareRevealOpacity)
+                        .animation(.spring(response: 0.50, dampingFraction: 0.52), value: rareRevealOpacity)
+                }
+                .frame(width: 100, height: 100)
+
+                Text("RARE specimen discovered!")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(specimenGold)
+                    .shadow(color: specimenGold.opacity(0.55), radius: 6, x: 0, y: 0)
+                    .opacity(rareBadgeOpacity)
+
+                Text(rare.name)
+                    .font(.system(size: 10, weight: .medium, design: .rounded))
+                    .foregroundStyle(specimenBrown)
+                    .opacity(rareBadgeOpacity)
+            }
+        }
+        .frame(width: 110)
+        .multilineTextAlignment(.center)
+    }
+
+    /// State 3: already collected — specimen shown immediately with a soft static halo.
+    @ViewBuilder
+    private func floatingAlreadyCollectedContent(specimen: Specimen) -> some View {
+        VStack(spacing: 4) {
+            ZStack {
+                // Static soft watercolor halo (no animation — player already has this)
+                WatercolorSplashView(
+                    color: theme.signalColor,
+                    size: 70,
+                    scale: 1.0,
+                    opacity: 0.30
+                )
+                Image(specimen.imageName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 48, height: 48)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+            .frame(width: 80, height: 80)
+
+            Text(specimen.name)
+                .font(.system(size: 10, weight: .medium, design: .rounded))
+                .foregroundStyle(specimenBrown)
+        }
+        .frame(width: 110)
+        .multilineTextAlignment(.center)
+    }
+
     // MARK: - Helpers
 
     private func miniStat(label: String, value: String) -> some View {
@@ -736,11 +902,27 @@ struct EndOfLevelView: View {
         // Burst starts 0.5 s after score lands (3.3 + 0.5 = 3.8 s).
         guard case .newDiscovery(_, let rare) = specimenUnlockResult else { return }
 
-        // "?" fades out while specimen springs in
+        // At 3.80 s: watercolor splash expands from the "?" position, "?" dissolves,
+        // specimen image springs in from center.
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.80) {
+            // Splash expands outward from center dot
+            withAnimation(.easeOut(duration: 0.55)) {
+                splashScale = 1.0
+                splashOpacity = 1.0
+            }
+            // Splash fades after expansion — leaves a residual stain behind
+            withAnimation(.easeIn(duration: 0.45).delay(0.38)) {
+                splashOpacity = 0.0
+            }
+            // Residual stain materialises as the splash fades out
+            withAnimation(.easeIn(duration: 0.30).delay(0.55)) {
+                splashStainOpacity = 1.0
+            }
+            // "?" silhouette dissolves as the burst fires
             withAnimation(.easeOut(duration: 0.28)) {
                 specimenSilhouetteOpacity = 0.0
             }
+            // Specimen springs in from center with organic bounce
             withAnimation(.spring(response: 0.42, dampingFraction: 0.52)) {
                 specimenRevealScale = 1.0
             }
@@ -756,10 +938,23 @@ struct EndOfLevelView: View {
             }
         }
 
-        // Rare biome specimen reveal (if applicable) — starts at 5.7 s
+        // Rare biome specimen reveal (if applicable) — larger, more intense splash
+        // starts 5.7 s after card appears.
         guard rare != nil else { return }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 5.70) {
+            // Larger splash for rare — more intense color, slower expansion
+            withAnimation(.easeOut(duration: 0.65)) {
+                rareSplashScale = 1.0
+                rareSplashOpacity = 1.0
+            }
+            withAnimation(.easeIn(duration: 0.50).delay(0.45)) {
+                rareSplashOpacity = 0.0
+            }
+            withAnimation(.easeIn(duration: 0.35).delay(0.65)) {
+                rareSplashStainOpacity = 1.0
+            }
+            // Rare specimen appears (spring driven by rareRevealOpacity via animation modifier)
             withAnimation(.easeOut(duration: 0.45)) {
                 rareRevealOpacity = 1.0
             }
@@ -907,5 +1102,51 @@ private struct SeededRandom: RandomNumberGenerator {
         state ^= state >> 7
         state ^= state << 17
         return state
+    }
+}
+
+// MARK: - WatercolorSplashView
+
+/// Organic-feeling watercolor paint splash used behind the floating specimen element
+/// during the new-discovery reveal animation.
+///
+/// Rendered as a slightly asymmetric ellipse filled with a feathered radial gradient
+/// whose center is offset from geometric center (for a natural, non-circular look).
+/// The caller drives `scale` and `opacity` via SwiftUI animations; calling code uses
+/// two instances — one animated (the splash) and one at scale 1 (the residual stain).
+private struct WatercolorSplashView: View {
+
+    /// Tint color for the splash — typically `BiomeTheme.signalColor`.
+    let color: Color
+    /// Nominal diameter of the splash in points (the ellipse is ~15 % wider than this).
+    let size: CGFloat
+    /// Current scale (0 = collapsed dot, 1 = fully expanded). Driven by animation.
+    let scale: CGFloat
+    /// Overall opacity of the splash layer. Driven by animation.
+    let opacity: Double
+
+    var body: some View {
+        // Slightly asymmetric ellipse (wider than tall) — more natural than a circle.
+        Ellipse()
+            .fill(
+                RadialGradient(
+                    gradient: Gradient(stops: [
+                        .init(color: color.opacity(0.45), location: 0.00),
+                        .init(color: color.opacity(0.28), location: 0.40),
+                        .init(color: color.opacity(0.10), location: 0.72),
+                        .init(color: color.opacity(0.00), location: 1.00)
+                    ]),
+                    // Offset center gives the gradient an irregular, paint-drop feel.
+                    center: UnitPoint(x: 0.44, y: 0.46),
+                    startRadius: 0,
+                    endRadius: size * 0.55
+                )
+            )
+            // Wider than tall → paint tends to spread horizontally on wet paper.
+            .frame(width: size * 1.15, height: size * 0.88)
+            // Soft blur feathers the edges so they fade rather than cut off sharply.
+            .blur(radius: 5)
+            .scaleEffect(scale)
+            .opacity(opacity)
     }
 }

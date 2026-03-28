@@ -372,7 +372,8 @@ struct BiomeSelectView: View {
     /// Absent keys → pin renders at scale 1.0 (normal).
     @State private var pinScales: [Int: CGFloat]    = [:]
 
-    @State private var showSpecimenAlert = false
+    @State private var showingCabinet    = false
+    @State private var cabinetBiomeId: Int? = nil
     @State private var showSettings      = false
     @State private var showTitleScreen   = false
 
@@ -407,7 +408,25 @@ struct BiomeSelectView: View {
 
     // MARK: Body
 
+    /// Top-level body — conditionally shows the specimen cabinet hierarchy or the map.
     var body: some View {
+        if let biomeId = cabinetBiomeId {
+            // Biome display room — navigated to from the cabinet hub
+            BiomeDisplayRoomView(biomeId: biomeId, onBack: { cabinetBiomeId = nil })
+        } else if showingCabinet {
+            // Cabinet hub — navigated to from the Specimens button
+            SpecimenCabinetView(
+                onBack:         { showingCabinet = false },
+                onSelectBiome:  { cabinetBiomeId = $0 }
+            )
+        } else {
+            mapContent
+        }
+    }
+
+    /// The campaign map view — identical to the former `body` implementation.
+    /// Extracted so `body` can conditionally swap between map and cabinet screens.
+    private var mapContent: some View {
         GeometryReader { geo in
             let canvas = MapLayout.canvasSize(for: geo.size)
 
@@ -488,11 +507,6 @@ struct BiomeSelectView: View {
             .onChange(of: hexCampaignVisible) {
                 if !hexCampaignVisible { showingHex = false }
             }
-        }
-        .alert("Coming Soon", isPresented: $showSpecimenAlert) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text("The Specimen Collection cabinet will be unlocked in a future update.")
         }
         // DEBUG — remove before release
         // Cmd+Shift+D: dump level records from the map screen.
@@ -666,8 +680,8 @@ struct BiomeSelectView: View {
                     if hexCampaignVisible {
                         campaignGlobeButton
                     }
-                    // Specimen Collection button (placeholder)
-                    Button { showSpecimenAlert = true } label: {
+                    // Specimen Collection button
+                    Button { showingCabinet = true } label: {
                         Label("Specimens", systemImage: "ladybug.fill")
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(Color.white)

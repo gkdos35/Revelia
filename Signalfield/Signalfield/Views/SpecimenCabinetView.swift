@@ -46,25 +46,30 @@ struct SpecimenCabinetView: View {
     // MARK: - Body
 
     var body: some View {
-        ZStack {
-            // ── Background ────────────────────────────────────────────────
-            cabinetBackground
+        // GeometryReader + explicit ZStack frame (same pattern as WelcomeView):
+        // prevents .ignoresSafeArea() on background children from expanding the
+        // ZStack beyond the available content area, which would push content upward.
+        GeometryReader { geo in
+            ZStack {
+                // ── Background ────────────────────────────────────────────────
+                cabinetBackground
 
-            // ── Ambient dust motes ────────────────────────────────────────
-            CabinetDustView()
-                .allowsHitTesting(false)
+                // ── Ambient dust motes ────────────────────────────────────────
+                CabinetDustView()
+                    .allowsHitTesting(false)
 
-            // ── Main content ──────────────────────────────────────────────
-            VStack(spacing: 0) {
-                cabinetHeader
-                    .padding(.horizontal, 28)
-                    .padding(.top, 20)
-                    .padding(.bottom, 20)
+                // ── Main content ──────────────────────────────────────────────
+                VStack(spacing: 0) {
+                    cabinetHeader
+                        .padding(.horizontal, 28)
+                        .padding(.top, 20)
+                        .padding(.bottom, 20)
 
-                cabinetGrid
+                    cabinetGrid
+                }
             }
+            .frame(width: geo.size.width, height: geo.size.height)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     // MARK: - Background

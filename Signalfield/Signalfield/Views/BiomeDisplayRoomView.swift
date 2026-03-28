@@ -76,31 +76,36 @@ struct BiomeDisplayRoomView: View {
     // MARK: - Body
 
     var body: some View {
-        ZStack {
-            // ── Background: cabinet base + biome ambient glow ─────────────
-            roomBackground
+        // GeometryReader + explicit ZStack frame (same pattern as WelcomeView):
+        // prevents .ignoresSafeArea() on background children from expanding the
+        // ZStack beyond the available content area, which would push content upward.
+        GeometryReader { geo in
+            ZStack {
+                // ── Background: cabinet base + biome ambient glow ─────────────
+                roomBackground
 
-            // ── Biome-tinted dust motes ───────────────────────────────────
-            BiomeDustView(tintColor: theme.pinColor)
-                .allowsHitTesting(false)
+                // ── Biome-tinted dust motes ───────────────────────────────────
+                BiomeDustView(tintColor: theme.pinColor)
+                    .allowsHitTesting(false)
 
-            // ── Main content ──────────────────────────────────────────────
-            VStack(spacing: 0) {
-                roomHeader
-                    .padding(.horizontal, 28)
-                    .padding(.top, 20)
-                    .padding(.bottom, 16)
+                // ── Main content ──────────────────────────────────────────────
+                VStack(spacing: 0) {
+                    roomHeader
+                        .padding(.horizontal, 28)
+                        .padding(.top, 20)
+                        .padding(.bottom, 16)
 
-                specimenGrid
+                    specimenGrid
+                }
+
+                // ── Detail modal overlay ──────────────────────────────────────
+                // Uses ZStack + `if` pattern (never opacity/hidden) per safe-coding rules.
+                if selectedSpecimenId != nil, let spec = selectedSpecimen {
+                    specimenDetailOverlay(spec)
+                }
             }
-
-            // ── Detail modal overlay ──────────────────────────────────────
-            // Uses ZStack + `if` pattern (never opacity/hidden) per safe-coding rules.
-            if selectedSpecimenId != nil, let spec = selectedSpecimen {
-                specimenDetailOverlay(spec)
-            }
+            .frame(width: geo.size.width, height: geo.size.height)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
             guard let sid = newestSpecimenId else { return }
             activeShimmerSpecimenId = sid

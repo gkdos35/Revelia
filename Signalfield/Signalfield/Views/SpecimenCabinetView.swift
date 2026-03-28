@@ -46,30 +46,26 @@ struct SpecimenCabinetView: View {
     // MARK: - Body
 
     var body: some View {
-        // GeometryReader + explicit ZStack frame (same pattern as WelcomeView):
-        // prevents .ignoresSafeArea() on background children from expanding the
-        // ZStack beyond the available content area, which would push content upward.
-        GeometryReader { geo in
-            ZStack {
-                // ── Background ────────────────────────────────────────────────
-                cabinetBackground
+        // Background is applied via .background(...ignoresSafeArea()) so the
+        // background image bleeds behind the title bar while the ZStack itself
+        // respects the safe area — content starts cleanly below the title bar.
+        ZStack {
+            // ── Ambient dust motes ────────────────────────────────────────
+            CabinetDustView()
+                .allowsHitTesting(false)
 
-                // ── Ambient dust motes ────────────────────────────────────────
-                CabinetDustView()
-                    .allowsHitTesting(false)
+            // ── Main content ──────────────────────────────────────────────
+            VStack(spacing: 0) {
+                cabinetHeader
+                    .padding(.horizontal, 28)
+                    .padding(.top, 20)
+                    .padding(.bottom, 20)
 
-                // ── Main content ──────────────────────────────────────────────
-                VStack(spacing: 0) {
-                    cabinetHeader
-                        .padding(.horizontal, 28)
-                        .padding(.top, 20)
-                        .padding(.bottom, 20)
-
-                    cabinetGrid
-                }
+                cabinetGrid
             }
-            .frame(width: geo.size.width, height: geo.size.height)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(cabinetBackground.ignoresSafeArea())
     }
 
     // MARK: - Background
@@ -78,14 +74,15 @@ struct SpecimenCabinetView: View {
         ZStack {
             // Deep dark-navy base — always present as a safe fallback.
             Color(red: 0.05, green: 0.05, blue: 0.09)
-                .ignoresSafeArea()
             // Atmospheric background image when available.
             Image("CabinetBackground")
                 .resizable()
                 .scaledToFill()
-                .ignoresSafeArea()
                 .opacity(0.80)
         }
+        // Note: .ignoresSafeArea() is applied by the caller via
+        // .background(cabinetBackground.ignoresSafeArea()), NOT here.
+        // This keeps the background out of the ZStack's layout calculation.
     }
 
     // MARK: - Header
@@ -180,29 +177,18 @@ private struct BiomeCaseView: View {
 
     var body: some View {
         ZStack {
-            // ── Biome-tinted radial glow behind the case ──────────────────
-            RadialGradient(
-                gradient: Gradient(colors: [
-                    theme.pinColor.opacity(0.22),
-                    theme.pinColor.opacity(0.0)
-                ]),
-                center: .center,
-                startRadius: 0,
-                endRadius: 100
-            )
-            .frame(width: 200, height: 180)
-            .blur(radius: 8)
-
             // ── Glass case panel ──────────────────────────────────────────
+            // Raised to 0.09 so the frosted glass surface is clearly visible
+            // against the dark atmospheric background.
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.white.opacity(0.06))
+                .fill(Color.white.opacity(0.09))
 
-            // Top reflection line — thin gradient simulating light on glass
+            // Top reflection line — light catching the top edge of the glass
             VStack(spacing: 0) {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(
                         LinearGradient(
-                            colors: [Color.white.opacity(0.10), Color.white.opacity(0.0)],
+                            colors: [Color.white.opacity(0.18), Color.white.opacity(0.0)],
                             startPoint: .top,
                             endPoint: .bottom
                         )
@@ -213,14 +199,14 @@ private struct BiomeCaseView: View {
                 Spacer()
             }
 
-            // Outer border
+            // Outer border — raised lineWidth + opacity to read on dark bg
             RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(Color.white.opacity(0.18), lineWidth: 0.5)
+                .strokeBorder(Color.white.opacity(0.28), lineWidth: 1.0)
 
             // Golden pulse border — only shown briefly for newest biome
             if showPulse {
                 RoundedRectangle(cornerRadius: 12)
-                    .strokeBorder(gold.opacity(pulsing ? 0.55 : 0.20), lineWidth: 1.5)
+                    .strokeBorder(gold.opacity(pulsing ? 0.60 : 0.22), lineWidth: 1.5)
             }
 
             // ── Case content ──────────────────────────────────────────────
@@ -254,13 +240,29 @@ private struct BiomeCaseView: View {
                 // X/Y count
                 Text("\(collectedCount) / \(totalCount)")
                     .font(.system(size: 10, weight: .medium, design: .rounded))
-                    .foregroundStyle(Color.white.opacity(0.45))
+                    .foregroundStyle(Color.white.opacity(0.50))
                     .padding(.bottom, 10)
             }
         }
         .frame(height: 140)
         .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(color: theme.pinColor.opacity(0.15), radius: 10, x: 0, y: 4)
+        // ── Biome-tinted radial glow BEHIND the case ─────────────────────
+        // Placed after clipShape so the glow isn't clipped — it bleeds
+        // softly around the case edges for the "display lit from within" look.
+        .background(
+            RadialGradient(
+                gradient: Gradient(colors: [
+                    theme.pinColor.opacity(0.32),
+                    theme.pinColor.opacity(0.0)
+                ]),
+                center: .center,
+                startRadius: 0,
+                endRadius: 90
+            )
+            .blur(radius: 12)
+            .frame(width: 220, height: 190)
+        )
+        .shadow(color: theme.pinColor.opacity(0.20), radius: 14, x: 0, y: 5)
         .onAppear {
             guard isNewest else { return }
             showPulse = true

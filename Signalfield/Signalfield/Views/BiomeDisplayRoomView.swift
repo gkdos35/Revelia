@@ -76,36 +76,32 @@ struct BiomeDisplayRoomView: View {
     // MARK: - Body
 
     var body: some View {
-        // GeometryReader + explicit ZStack frame (same pattern as WelcomeView):
-        // prevents .ignoresSafeArea() on background children from expanding the
-        // ZStack beyond the available content area, which would push content upward.
-        GeometryReader { geo in
-            ZStack {
-                // ── Background: cabinet base + biome ambient glow ─────────────
-                roomBackground
+        // Background applied via .background(...ignoresSafeArea()) so the image
+        // bleeds behind the title bar while the ZStack respects the safe area —
+        // content (header, back button) starts cleanly below the title bar.
+        ZStack {
+            // ── Biome-tinted dust motes ───────────────────────────────────
+            BiomeDustView(tintColor: theme.pinColor)
+                .allowsHitTesting(false)
 
-                // ── Biome-tinted dust motes ───────────────────────────────────
-                BiomeDustView(tintColor: theme.pinColor)
-                    .allowsHitTesting(false)
+            // ── Main content ──────────────────────────────────────────────
+            VStack(spacing: 0) {
+                roomHeader
+                    .padding(.horizontal, 28)
+                    .padding(.top, 20)
+                    .padding(.bottom, 16)
 
-                // ── Main content ──────────────────────────────────────────────
-                VStack(spacing: 0) {
-                    roomHeader
-                        .padding(.horizontal, 28)
-                        .padding(.top, 20)
-                        .padding(.bottom, 16)
-
-                    specimenGrid
-                }
-
-                // ── Detail modal overlay ──────────────────────────────────────
-                // Uses ZStack + `if` pattern (never opacity/hidden) per safe-coding rules.
-                if selectedSpecimenId != nil, let spec = selectedSpecimen {
-                    specimenDetailOverlay(spec)
-                }
+                specimenGrid
             }
-            .frame(width: geo.size.width, height: geo.size.height)
+
+            // ── Detail modal overlay ──────────────────────────────────────
+            // Uses ZStack + `if` pattern (never opacity/hidden) per safe-coding rules.
+            if selectedSpecimenId != nil, let spec = selectedSpecimen {
+                specimenDetailOverlay(spec)
+            }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(roomBackground.ignoresSafeArea())
         .onAppear {
             guard let sid = newestSpecimenId else { return }
             activeShimmerSpecimenId = sid
@@ -123,25 +119,25 @@ struct BiomeDisplayRoomView: View {
         ZStack {
             // Dark base
             Color(red: 0.05, green: 0.05, blue: 0.09)
-                .ignoresSafeArea()
             // Cabinet background image when available
             Image("CabinetBackground")
                 .resizable()
                 .scaledToFill()
-                .ignoresSafeArea()
                 .opacity(0.70)
-            // Biome ambient glow — room bathed in the biome's light
+            // Biome ambient glow — room bathed in the biome's light.
+            // Radius expanded to 420pt so the tint reaches the window edges.
             RadialGradient(
                 gradient: Gradient(colors: [
-                    theme.pinColor.opacity(0.24),
+                    theme.pinColor.opacity(0.26),
                     theme.pinColor.opacity(0.0)
                 ]),
                 center: .center,
                 startRadius: 0,
-                endRadius: 280
+                endRadius: 420
             )
-            .ignoresSafeArea()
         }
+        // Note: .ignoresSafeArea() applied by caller via
+        // .background(roomBackground.ignoresSafeArea())
     }
 
     // MARK: - Header
@@ -262,21 +258,7 @@ private struct SpecimenPlatformView: View {
     var body: some View {
         VStack(spacing: 6) {
             ZStack {
-                // Biome-tinted glow beneath specimen (collected only)
-                if collected {
-                    RadialGradient(
-                        gradient: Gradient(colors: [
-                            biomeTheme.pinColor.opacity(0.20),
-                            biomeTheme.pinColor.opacity(0.0)
-                        ]),
-                        center: .center,
-                        startRadius: 0,
-                        endRadius: platformWidth * 0.7
-                    )
-                    .frame(width: platformWidth + 16, height: platformHeight + 16)
-                }
-
-                // Golden entry shimmer
+                // Golden entry shimmer (collected + newest only)
                 if isNewest {
                     RoundedRectangle(cornerRadius: 8)
                         .fill(gold.opacity(shimmerOpacity))
@@ -284,16 +266,16 @@ private struct SpecimenPlatformView: View {
                         .blur(radius: 6)
                 }
 
-                // Glass platform surface
+                // Glass platform surface — raised to 0.09 for visible glass effect
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.white.opacity(0.05))
+                    .fill(Color.white.opacity(0.09))
 
-                // Top reflection
+                // Top reflection — simulates light catching the glass edge
                 VStack(spacing: 0) {
                     RoundedRectangle(cornerRadius: 8)
                         .fill(
                             LinearGradient(
-                                colors: [Color.white.opacity(0.10), Color.white.opacity(0.0)],
+                                colors: [Color.white.opacity(0.18), Color.white.opacity(0.0)],
                                 startPoint: .top,
                                 endPoint:   .bottom
                             )
@@ -304,13 +286,13 @@ private struct SpecimenPlatformView: View {
                     Spacer()
                 }
 
-                // Platform border
+                // Platform border — raised opacity + lineWidth to read on dark bg
                 RoundedRectangle(cornerRadius: 8)
                     .strokeBorder(
                         specimen.isRare
-                            ? gold.opacity(0.28)
-                            : Color.white.opacity(0.14),
-                        lineWidth: specimen.isRare ? 1.0 : 0.5
+                            ? gold.opacity(0.40)
+                            : Color.white.opacity(0.22),
+                        lineWidth: specimen.isRare ? 1.2 : 1.0
                     )
 
                 // Platform content
@@ -323,16 +305,32 @@ private struct SpecimenPlatformView: View {
                 } else {
                     Text("?")
                         .font(.system(size: 16, weight: .bold, design: .rounded))
-                        .foregroundStyle(Color.white.opacity(0.15))
+                        .foregroundStyle(Color.white.opacity(0.18))
                 }
             }
             .frame(width: platformWidth, height: platformHeight)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            // Biome-tinted glow BEHIND the platform — always present but
+            // stronger for collected, subtle for uncollected slots.
+            .background(
+                RadialGradient(
+                    gradient: Gradient(colors: [
+                        biomeTheme.pinColor.opacity(collected ? 0.35 : 0.12),
+                        biomeTheme.pinColor.opacity(0.0)
+                    ]),
+                    center: .center,
+                    startRadius: 0,
+                    endRadius: platformWidth * 0.8
+                )
+                .blur(radius: 8)
+                .frame(width: platformWidth + 24, height: platformHeight + 20)
+            )
 
-            // Specimen name (collected only)
+            // Specimen name — warm white, shown for collected specimens
             if collected {
                 Text(specimen.name)
                     .font(.system(size: 9, weight: .medium, design: .rounded))
-                    .foregroundStyle(Color.white.opacity(0.65))
+                    .foregroundStyle(Color(red: 1.0, green: 0.97, blue: 0.90).opacity(0.75))
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
                     .frame(width: platformWidth + 12)

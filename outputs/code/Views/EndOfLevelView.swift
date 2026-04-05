@@ -1,4 +1,4 @@
-// Signalfield/Views/EndOfLevelView.swift
+// Revelia/Views/EndOfLevelView.swift
 //
 // Post-game overlay shown after winning or losing a level.
 //

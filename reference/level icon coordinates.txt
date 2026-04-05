@@ -1,0 +1,100 @@
+Training range: private static let biome0: [CGPoint] = [
+    CGPoint(x: 0.473, y: 0.1523),
+    CGPoint(x: 0.562, y: 0.3104),
+    CGPoint(x: 0.535, y: 0.4784),
+    CGPoint(x: 0.236, y: 0.6165),
+    CGPoint(x: 0.559, y: 0.7414),
+    CGPoint(x: 0.383, y: 0.8717)
+]
+
+Bioluminescence: private static let biome2: [CGPoint] = [
+    CGPoint(x: 0.456, y: 0.1177),
+    CGPoint(x: 0.381, y: 0.2499),
+    CGPoint(x: 0.460, y: 0.3563),
+    CGPoint(x: 0.544, y: 0.4950),
+    CGPoint(x: 0.499, y: 0.6283),
+    CGPoint(x: 0.404, y: 0.7044),
+    CGPoint(x: 0.416, y: 0.8523),
+    CGPoint(x: 0.515, y: 0.9295)
+]
+
+Fog Marsh:  private static let biome1: [CGPoint] = [
+    CGPoint(x: 0.415, y: 0.0830),
+    CGPoint(x: 0.539, y: 0.1920),
+    CGPoint(x: 0.615, y: 0.3059),
+    CGPoint(x: 0.526, y: 0.4304),
+    CGPoint(x: 0.499, y: 0.5634),
+    CGPoint(x: 0.639, y: 0.6572),
+    CGPoint(x: 0.639, y: 0.7941),
+    CGPoint(x: 0.509, y: 0.9051)
+]
+
+Frozen Mirrors:  private static let biome3: [CGPoint] = [
+    CGPoint(x: 0.497, y: 0.0675),
+    CGPoint(x: 0.533, y: 0.1848),
+    CGPoint(x: 0.489, y: 0.2940),
+    CGPoint(x: 0.552, y: 0.3925),
+    CGPoint(x: 0.477, y: 0.5206),
+    CGPoint(x: 0.516, y: 0.6635),
+    CGPoint(x: 0.453, y: 0.7845),
+    CGPoint(x: 0.496, y: 0.9047)
+]
+
+Ruins:  private static let biome4: [CGPoint] = [
+    CGPoint(x: 0.508, y: 0.1172),
+    CGPoint(x: 0.499, y: 0.2396),
+    CGPoint(x: 0.443, y: 0.3622),
+    CGPoint(x: 0.565, y: 0.4557),
+    CGPoint(x: 0.493, y: 0.5569),
+    CGPoint(x: 0.541, y: 0.6701),
+    CGPoint(x: 0.450, y: 0.7625),
+    CGPoint(x: 0.540, y: 0.9087)
+]
+
+The Underside:  private static let biome5: [CGPoint] = [
+    CGPoint(x: 0.351, y: 0.2078),
+    CGPoint(x: 0.565, y: 0.2963),
+    CGPoint(x: 0.672, y: 0.4311),
+    CGPoint(x: 0.461, y: 0.5063),
+    CGPoint(x: 0.358, y: 0.6430),
+    CGPoint(x: 0.539, y: 0.7303),
+    CGPoint(x: 0.700, y: 0.8174),
+    CGPoint(x: 0.592, y: 0.9449)
+]
+
+Coral Basin:  private static let biome6: [CGPoint] = [
+    CGPoint(x: 0.382, y: 0.0674),
+    CGPoint(x: 0.465, y: 0.2156),
+    CGPoint(x: 0.333, y: 0.3073),
+    CGPoint(x: 0.401, y: 0.4226),
+    CGPoint(x: 0.280, y: 0.5213),
+    CGPoint(x: 0.370, y: 0.6639),
+    CGPoint(x: 0.226, y: 0.7532),
+    CGPoint(x: 0.369, y: 0.8994)
+]
+
+Quicksand:  private static let biome7: [CGPoint] = [
+    CGPoint(x: 0.421, y: 0.0614),
+    CGPoint(x: 0.335, y: 0.2107),
+    CGPoint(x: 0.527, y: 0.3122),
+    CGPoint(x: 0.456, y: 0.4691),
+    CGPoint(x: 0.666, y: 0.5432),
+    CGPoint(x: 0.612, y: 0.6887),
+    CGPoint(x: 0.793, y: 0.7885),
+    CGPoint(x: 0.582, y: 0.9091)
+]
+
+The Delta:  private static let biome8: [CGPoint] = [
+    CGPoint(x: 0.415, y: 0.0519),
+    CGPoint(x: 0.466, y: 0.1563),
+    CGPoint(x: 0.594, y: 0.2201),
+    CGPoint(x: 0.427, y: 0.2761),
+    CGPoint(x: 0.650, y: 0.3438),
+    CGPoint(x: 0.635, y: 0.4393),
+    CGPoint(x: 0.499, y: 0.4808),
+    CGPoint(x: 0.598, y: 0.5633),
+    CGPoint(x: 0.454, y: 0.6110),
+    CGPoint(x: 0.297, y: 0.6737),
+    CGPoint(x: 0.411, y: 0.7758),
+    CGPoint(x: 0.620, y: 0.7923)
+]

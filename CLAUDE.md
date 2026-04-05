@@ -1,9 +1,10 @@
-# Signalfield — Master Project Instructions
+@AGENTS.md
+# Revelia — Master Project Instructions
 
 ## About This Project
-Signalfield is an original macOS logic puzzle game inspired by deduction puzzle mechanics (Minesweeper-like), with a completely original theme, terminology, UI, and rule set. It is a native macOS 13+ app built in Swift 5.9+ with SwiftUI, using MVVM architecture and zero external dependencies.
+Revelia is an original macOS logic puzzle game inspired by deduction puzzle mechanics (Minesweeper-like), with a completely original theme, terminology, UI, and rule set. It is a native macOS 13+ app built in Swift 5.9+ with SwiftUI, using MVVM architecture and zero external dependencies.
 
-**Current stage:** Active development — full 148-level campaign complete, all screen infrastructure built, visual polish largely done, tutorial system in progress, audio not yet started
+**Current stage:** Active development — campaign complete, visual polish done, How to Play + biome intros built, specimen collection and audio systems implemented, now in polish / ship-readiness work.
 **Platform:** macOS 13+ (Ventura) — native desktop app
 **Tech stack:** Swift 5.9+, SwiftUI, SpriteKit (explosion FX), Xcode, MVVM architecture
 **Team size:** Solo developer (me) + Claude as co-builder
@@ -22,7 +23,7 @@ Signalfield is an original macOS logic puzzle game inspired by deduction puzzle 
 ## Key Design Decisions (Finalized)
 - **Session length:** Escalating — Training Range ~1–2 min, The Delta ~10–15 min
 - **After losing:** Full board reveal (all hazards, signals, correct/incorrect tags shown), then SpriteKit chain-reaction explosion animation (~1.7s)
-- **Scoring:** Efficiency-based — score = 100000 - time×20 - totalActions×30 + (noGuess ? 15000 : 0)
+- **Scoring:** Bonus-driven with a 100,000 completion floor. Large score separation comes from fast completion time, action efficiency, clean play (no incorrect confirmed tags), and helper-free play. Difficulty-scaled thresholds use a mix of tile count, safe tile count, hazard count, and mechanic complexity. Excellent runs can approach 1,000,000 points.
 - **Cascade rules:** Stops at fogged tiles, locked tiles, and blocker tiles. Reveals beacons and triggers their effects. Linked tiles cascade using their OWN signal (not the displayed partner signal). Sonar tiles cascade only if all directional counts are 0. Standard cascade on normal tiles.
 - **Target player:** Casual Puzzler (relaxing, needs onboarding, 2–5 min early sessions)
 - **Game feel:** Exciting opening cascade → mounting mid-game tension → satisfying finish
@@ -57,8 +58,10 @@ Two-stage cycle: None → Suspect (?) → Confirmed (solid ◆) → None
 
 ## Star Ratings
 - ★ Complete the level
-- ★★ Complete under par time + no incorrect confirmed tags
-- ★★★ Complete under par time + no incorrect confirmed tags + no charges used
+- ★★ Complete the level, beat the difficulty-scaled decent-time threshold, and place no incorrect confirmed tags
+- ★★★ Complete the level, beat the difficulty-scaled fast-time threshold, stay within the difficulty-scaled low-action threshold, place no incorrect confirmed tags, use no helper tools, and use no Casual Shield
+
+Thresholds scale using a mix of tile count, safe tile count, hazard count, and mechanic complexity. Early levels should still require meaningful mastery for 3 stars.
 
 ## Keyboard Shortcuts (Gameplay)
 | Key | Action |
@@ -88,7 +91,7 @@ Changes to these files have caused repeated regressions. Exercise extreme cautio
 - Each biome introduces exactly ONE new deterministic mechanic
 - The Delta (biome 8) is the confluence chapter — all prior mechanics combined
 - Campaign progression with locks/unlocks, per-level leaderboards, save/resume
-- Scoring: composite formula rewarding logic and speed, penalizing mistakes
+- Scoring: bonus-driven mastery system with a 100,000 completion floor and large separation for fast, efficient, clean, helper-free clears
 
 ## Biome Mechanics (Quick Reference)
 | Biome | Name | Mechanic |
@@ -110,14 +113,14 @@ Changes to these files have caused repeated regressions. Exercise extreme cautio
 - If unsure about a design decision, present options with tradeoffs — don't guess
 - All code must compile. Never output pseudocode when real code is requested
 - When writing Swift, follow Apple's API Design Guidelines and Swift style conventions
-- Keep the full spec document (`reference/spec/signalfield-spec.md`) as the source of truth
+- Keep the full spec document (`reference/spec/revelia-spec.md`) as the source of truth
 
 ## Available Skills
 When I ask about **game design** (mechanics, balancing, GDD, biome design, UX flows, puzzle theory), read `.claude/skills/game-design/SKILL.md` first.
 
 When I ask about **development** (Swift code, SwiftUI, architecture, MVVM, Xcode project setup, algorithms), read `.claude/skills/development/SKILL.md` first.
 
-When I ask about **QA and testing** (bugs, playtesting, test plans, edge cases, crash reports), read `.claude/skills/qa-testing/SKILL.md` first.
+When **fixing bugs, testing, or validating features**, read `.claude/skills/qa-testing/SKILL.md` first. For complex bugs, also use `.claude/skills/systematic-debugging/SKILL.md`. This includes the self-directed diagnose → fix → verify loop — Cowork handles the full investigation in one pass.
 
 When I ask about **art and assets** (visual design, icons, tile graphics, app icon, screenshots, style guide), read `.claude/skills/art-assets/SKILL.md` first.
 
@@ -152,21 +155,6 @@ outputs/            — Claude puts finished work here
 reference/          — Source-of-truth documents (read-only intent)
   spec/             — The master spec and supporting docs
   brand/            — Logo, palette, typography, style guide
-    continent-map.png           — Watercolor continent map (BiomeSelectView background)
-    signalfield-logo.png        — Hero logo (WelcomeView)
-    welcome-background.png      — Full-bleed art (WelcomeView)
-    settings-background.png     — Background art (SettingsView)
-    Training Range.png          — Biome level-select watercolor background
-    Fog Marsh.png
-    Bioluminescence.png
-    Frozen Mirrors.png
-    Ruins.png
-    The Underside.png
-    Coral Basin.png
-    Quicksand.png
-    The Delta.png
-    tiles/                      — Tile texture source files (per-biome watercolor tiles)
-    gameplay/                   — In-game screenshot references
   competitors/      — Competitive research
   apple-guidelines/ — Relevant Apple HIG / review guideline excerpts
 archive/            — Completed or superseded work
@@ -206,7 +194,7 @@ Persistent top bar during gameplay:
 
 ### Backgrounds
 - `WelcomeView`: `welcome-background.png` full-bleed + gradient vignette + 18 floating particles
-- `BiomeSelectView`: `continent-map.png` watercolor with subtractive fog overlay
+- `BiomeSelectView`: square campaign uses `ContinentMap`; hex campaign uses `ContinentMapHex`
 - `LevelSelectView`: per-biome watercolor image (e.g. `Training Range.png`)
 - `SettingsView`: `settings-background.png`
 
@@ -222,12 +210,13 @@ The home/title screen is shown **every time the app launches**. There is no auto
 **Layout (GeometryReader-based, centered):**
 - Full-bleed `WelcomeBackground` image + gradient vignette
 - `ParticleFieldView` — 18 non-interactive floating white circles, animated drift loop
-- Hero logo: `SignalfieldLogo` image, `geo.size.width * 0.55` wide
+- Hero logo: `ReveliaLogo` image, `geo.size.width * 0.55` wide
 - Tagline: "Think. Solve. Don't explode."
-- Three meadow-green buttons (220×44 pt, `#7AAA58`, cornerRadius 8):
+- Four meadow-green buttons (220×44 pt, `#7AAA58`, cornerRadius 8):
   - **Play / Continue** (adaptive — "Continue" if any level is completed)
   - **Settings** (opens `SettingsView` sheet)
-  - **Tutorial** ("Coming soon" toast — not yet implemented)
+  - **How to Play** (opens `HowToPlayView` sheet — 6-page parchment guide)
+  - **High Scores** (opens the local leaderboard flow)
 - Play/Continue has a scale press animation (0.97 on tap)
 
 **hasProgress logic:**
@@ -240,14 +229,38 @@ progressStore.data.levelRecords.values.contains { $0.completed }
 `SettingsStore` is a `final class ObservableObject` persisting to `settings.json` in Application Support.
 
 **Persisted settings:**
-- `soundEnabled: Bool` (default `true`) — the only persisted setting currently
+- `backgroundMusicEnabled: Bool` (default `true`)
+- `gameSoundsEnabled: Bool` (default `true`)
+- `shownBiomeIntros: [Int]` — biome IDs where the player has tapped "Don't show again" on the mechanic intro sheet
 
 **Access points:**
 - Settings gear in HUDView (during gameplay)
 - Settings button on WelcomeView (home screen)
 - Settings button on BiomeSelectView (campaign map top bar)
 
-`SettingsView` displays a `Toggle` for sound and a Reset Progress button (which calls `progressStore.resetAllProgress()`).
+`SettingsView` displays separate toggles for background music and game sounds, a reset-progress action that also clears local leaderboards, and a privacy-policy link.
+
+## How to Play (HowToPlayView.swift)
+
+A 6-page swipeable parchment guide presented as a `.sheet` from WelcomeView. Teaches core mechanics through large visual illustrations with minimal text. Uses Training Range tile textures from BiomeTheme for illustrations.
+
+**Pages:** The Field → Scanning (+ cascade mention) → Reading Signals → Deduction (the key page) → Tagging → Winning
+
+**Navigation:** Next/Back buttons (not swipe — swipe doesn't work well on macOS). Styled warm brown parchment buttons. Custom page indicator dots (warm brown). Close button (✕) on every page. "Start Playing" button on the last page.
+
+**Architecture:** Completely self-contained in HowToPlayView.swift. Presented as a sheet — zero interaction with GameView or any game logic. This is intentional: a previous interactive tutorial overlay caused repeated layout regressions and was removed.
+
+## Biome Mechanic Intros (BiomeMechanicView.swift)
+
+Per-biome mechanic explanation pages presented as a `.sheet` when the player enters the first level of a new biome. Same parchment visual style and Next/Back navigation as How to Play.
+
+**Content:** One or two pages per biome explaining the new mechanic with illustrations. Fog Marsh (2 pages), Bioluminescence (1), Frozen Mirrors (2), Ruins (1), The Underside (1), Coral Basin (1), Quicksand (1), The Delta (1).
+
+**Dismissal:** "Got it" button dismisses the sheet. "Don't show again" checkbox stores the biome ID in `SettingsStore.shownBiomeIntros`.
+
+**Architecture:** Presented as a `.sheet` from the game screen container — NOT a ZStack overlay on GameView. This is a hard rule. Sheets are managed by SwiftUI independently and cannot affect GameView's layout or touch handling.
+
+**Important lesson learned:** An interactive tutorial overlay (spotlight + tooltips on live gameplay) was attempted and removed after causing cascading regressions across the app. The overlay approach fundamentally conflicted with the AppKit/SwiftUI hybrid view hierarchy used by BoardInputView. The sheet-based approach is architecturally safe and must not be changed to an overlay.
 
 ## Architecture Quick Reference
 
@@ -267,14 +280,16 @@ progressStore.data.levelRecords.values.contains { $0.completed }
 
 ### Persistence
 - `Persistence/ProgressStore.swift` — `@MainActor final class ObservableObject`; JSON to Application Support; per-level and per-biome records
-- `Persistence/SettingsStore.swift` — `final class ObservableObject`; JSON to Application Support; `soundEnabled` only
+- `Persistence/SettingsStore.swift` — `final class ObservableObject`; JSON to Application Support; `backgroundMusicEnabled`, `gameSoundsEnabled`, `shownBiomeIntros`
+- `Persistence/SpecimenStore.swift` — specimen unlock persistence to `specimens.json`
+- `Persistence/LeaderboardStore.swift` — local top-10 score/time leaderboards per level
 
 ### Views
 - `Views/RootView.swift` — Top-level navigation (`showingHome` → `WelcomeView` → `BiomeSelectView` ↔ `ContentView`)
 - `Views/WelcomeView.swift` — Home screen (`TitleSplashView` + `ParticleFieldView`)
 - `Views/BiomeSelectView.swift` — Campaign map with subtractive fog, biome pins, globe toggle
 - `Views/LevelSelectView.swift` — Per-biome level picker with watercolor background and parchment info cards
-- `Views/BiomeLevelLayout.swift` — Hand-placed normalized coordinates for level circles on each biome's painted path
+- `Utilities/BiomeLevelLayout.swift` — Hand-placed normalized coordinates for level circles on each biome's painted path
 - `Views/ContentView.swift` — Container holding `GameView` + `HUDView` + end-of-run overlays
 - `Views/GameView.swift` — Board rendering; dispatches to VStack/HStack (square) or ZStack+position (hex)
 - `Views/TileView.swift` — Individual tile; `TileBackgroundShape` handles square vs hex shape
@@ -282,11 +297,18 @@ progressStore.data.levelRecords.values.contains { $0.completed }
 - `Views/HUDView.swift` — Top-bar HUD (timer, actions, hazards, charges, score, state, settings gear)
 - `Views/EndOfLevelView.swift` — Post-run overlay (frosted-glass card, star bloom, score countup, biome particles)
 - `Views/BiomeCompleteView.swift` — Biome-final level summary screen (total stars, "Return to Map")
-- `Views/BiomeIntroOverlay.swift` — First-level-in-biome mechanic introduction overlay
-- `Views/DeltaIntroOverlay.swift` — Special introduction overlay for The Delta chapter
+- `Views/HowToPlayView.swift` — 6-page swipeable parchment guide (presented as sheet from WelcomeView)
+- `Views/BiomeMechanicView.swift` — Per-biome mechanic intro (presented as sheet on first level of each biome)
+- `Views/SpecimenCabinetView.swift` — specimen collection hub with one biome card per cabinet section
+- `Views/BiomeDisplayRoomView.swift` — per-biome specimen display room
 - `Views/BoardExplosionView.swift` — SwiftUI wrapper that hosts the SpriteKit explosion scene
 - `Views/SonarPulseOverlay.swift` — Animated directional pulse rings; uses `board.geometry.tileOrigin()`
 - `Views/SettingsView.swift` — Settings modal (sound toggle, reset progress)
+
+### Audio
+- `Audio/AudioManager.swift` — central music/SFX service
+- `Audio/AudioScreen.swift` — maps app screens to background-music tracks
+- `Audio/AudioAssets.swift` — canonical asset-name mapping for music and sound effects
 
 ### Dormant / Unused
 - `GlyphMapper.swift` — Maps signal values to glyph/pip characters. **Currently unused** — `TileView.swift` renders Arabic numerals directly. Do not wire up without explicit instruction.
@@ -356,7 +378,16 @@ Biome-final level IDs: L6, L14, L22, L30, L38, L46, L54, L62, L74 (square); L80,
 ## Level Select Screen (LevelSelectView.swift)
 
 ### Layout
-Each biome's level select screen uses a full-bleed watercolor background image (one per biome). Level circles are placed along the painted path using hand-placed normalized coordinates in `BiomeLevelLayout.swift`.
+Each biome's level select screen uses a fitted watercolor artwork canvas with level icons placed at hand-authored normalized coordinates from `BiomeLevelLayout.swift`. The header stays fixed above the artwork area and the info card is positioned relative to the selected node.
+
+### Layout Edit Workflow
+`LevelSelectView` includes a lightweight coordinate-edit mode for repositioning nodes:
+- **Cmd+Shift+L** — toggle layout edit mode
+- Drag nodes visually on the biome art
+- **Cmd+Shift+C** — copy the current biome's normalized `CGPoint` array to the clipboard
+- Paste the exported array back into `Utilities/BiomeLevelLayout.swift`
+
+Hex biomes intentionally reuse the same layout arrays as their square counterparts via `biomeId % 9`.
 
 ### Circle States
 - **Locked:** faint translucent circle (~30% opacity), no level number, not interactive
@@ -380,7 +411,7 @@ The mechanic hint row in the card is conditionally rendered — hidden when `mec
 ## Campaign Map (BiomeSelectView.swift)
 
 ### Map Foundation
-- `continent-map.png` watercolor image as full-bleed background
+- Square campaign uses `ContinentMap`; hex campaign uses `ContinentMapHex`
 - Subtractive fog: a single white fog layer (~0.80–0.85 opacity) covers the entire map; unlocked biome regions are punched out as holes using even-odd path clipping with Gaussian blur on edges
 - Biome region boundary paths defined in code; adjacent biomes share identical edge coordinates (no gaps, no overlaps)
 
@@ -391,15 +422,13 @@ The mechanic hint row in the card is conditionally rendered — hidden when `mec
 - Hover/tap shows star count tooltip
 - Hex campaign: pin shapes are hexagonal; square campaign: circular pins
 
-### Campaign Toggle (Globe Button)
+### Campaign Toggle (Map Button)
 Replaces the old segmented `Picker`. Implemented as a floating 58×58 pt circle button in the bottom-right corner:
 - Background: `LevelIconBackground` watercolor texture, `scaledToFill` + `scaleEffect(1.30)` clipped to circle (crops painted border, same technique as level markers)
-- Mini continent map image (40 pt) centred inside
+- Preview image shows the **destination** campaign, not the active one
+- In square mode, the button shows the hex map preview with a large centred `H`
+- In hex mode, the button shows the square map preview with no overlaid letter
 - White circular border
-- Mode badge (22 pt) offset to top-right corner of globe:
-  - Square mode: meadow-green rounded square with white "S"
-  - Hex mode: meadow-green flat-top hexagon (`HexagonBadgeShape`) with white "H"
-  - Badge animates with spring cross-fade on toggle
 - Scale pulse (to 1.05 then back) on tap
 - **Only visible when `hexCampaignVisible`** (`progressStore.isCompleted("L74")`)
 
@@ -437,14 +466,17 @@ Cinematic ~5s animation triggered by `RevealTrigger` passed from `ContentView` v
 - The Delta: bottom centre (river meets ocean)
 
 ## What I'm Working On Right Now
-- Phase: All campaign infrastructure and visual polish complete — 148 levels, all biome screens, persistence, scoring, SpriteKit explosions, campaign map, level select, welcome screen, settings, biome-themed tiles and backgrounds
-- Current: Fixing tutorial system implementation (guided L1 + biome intro tooltips)
-- Next: Audio system, Specimen Collection, Save/resume
-- Blockers: Tutorial overlay has caused layout regressions — fixing incrementally with one-bug-at-a-time approach
+- Phase: Polish and ship-readiness
+- Current: Specimen collection polish, campaign-map polish, level icon layout cleanup, settings/accessibility improvements
+- Next: Remove debug shortcuts, add UI smoke tests, add reduce-motion support, finish release checklist
+- Blockers: Final visual QA across map / level-select / specimen screens and broader pre-ship hardening
 
-### Specimen Collection (Design Decision — Build After Tutorial + Audio)
+### Version Control
+The project uses git (initialized March 2026). Always commit after successful changes. Use `git diff` to diagnose regressions. Do not use destructive revert commands casually; inspect diffs first and preserve intentional local changes.
 
-A meta-reward system that gives 3-star finishes tangible meaning and drives replayability.
+### Specimen Collection
+
+A meta-reward system that gives 3-star finishes tangible meaning and drives replayability. This system is now implemented and in visual-polish mode.
 
 **Core mechanic:**
 - Each level has a unique specimen (creature or plant native to that biome)
@@ -453,8 +485,11 @@ A meta-reward system that gives 3-star finishes tangible meaning and drives repl
 - Total collectibles: up to 148 level specimens + 18 biome specimens (9 square + 9 hex) = 166
 
 **Cabinet UI:**
-- Accessed via a button on the biome select screen (currently shows "Coming Soon" toast)
-- Each collected specimen displays: image + name (nothing else)
+- Accessed from the bottom-left button on the biome select screen
+- `SpecimenCabinetView` shows one biome card per cabinet section
+- `BiomeDisplayRoomView` shows the collected specimens for an individual biome
+- Cabinet cards currently use translucent parchment styling over the cabinet background art
+- Each collected specimen displays: image + name
 - Uncollected specimens are completely hidden — the cabinet grows as the player discovers
 - Players don't know how many specimens exist or what's coming next
 
@@ -470,8 +505,10 @@ A meta-reward system that gives 3-star finishes tangible meaning and drives repl
 - The Delta: rare hybrid species combining traits from multiple biomes
 
 **Persistence:**
-- Add to ProgressStore: per-level specimen unlocked (bool), per-biome rare specimen unlocked (bool)
+- `SpecimenStore.swift` — separate ObservableObject persisting to `specimens.json` in Application Support
+- Tracks `unlockedSpecimenIds: Set<String>`
 - Specimen unlock triggers when a level result is recorded with 3 stars
+- Rare biome specimen unlocks when all level specimens in that biome (square or hex) are collected
 
 ### Known Bugs
 - **Frozen Mirrors L23 zero pairs:** Generator should enforce pair count as hard minimum (retry generation if requirement not met) — verify this is working in testing
@@ -485,7 +522,7 @@ A meta-reward system that gives 3-star finishes tangible meaning and drives repl
 - **Cmd+Shift+D** — Dump all level records to console (sorted by level number)
 
 ### App Store Preparation
-- **Bundle ID:** `com.[yourdomain].signalfield` (update when domain secured)
+- **Bundle ID:** `com.[yourdomain].revelia` (update when domain secured)
 - **Category:** Games → Puzzle
 - **Pricing:** Paid upfront ($2.99–$4.99), no IAP — simplest review process
 - **App Sandbox:** App Container file access only. No network, camera, location, or special hardware.
@@ -493,21 +530,50 @@ A meta-reward system that gives 3-star finishes tangible meaning and drives repl
 - **Age rating:** Expected 4+ (no violence, mature content, or gambling)
 
 ### Privacy Policy
-Signalfield collects NO user data. All game data stored locally on device. No analytics, no telemetry, no network calls. Privacy policy must be hosted at a live URL (GitHub Pages) and submitted in App Store Connect. Template drafted in `reference/` or can be generated.
+Revelia is currently local-first:
+- no account system
+- no in-app third-party analytics or telemetry SDKs
+- no advertising SDKs
+- no cross-app tracking
+- gameplay/settings/progress data stored locally on device
 
-### Audio (Not Yet Built)
-No audio system exists yet. `SettingsStore.soundEnabled` toggle is wired but has no effect. Needed:
-- **Core SFX:** scan reveal, cascade start/wave, tag place/remove, hazard hit, level win, level loss
-- **Biome special SFX:** beacon ping, fog clarify, linked crystalline ping, fading signal, pulse flash
-- **Ambient:** One looping track per biome (~90–120s, `.m4a` format)
-- **AudioManager singleton** using AVFoundation (no external dependencies)
+Draft privacy policy assets now exist:
+- `reference/privacy-policy.md` — editable source draft
+- `reference/privacy.html` — simple hostable static page
+
+Still required before ship:
+- replace placeholders with real developer/studio name
+- replace placeholders with real privacy/support email
+- replace placeholders with real website URL
+- host the privacy policy at a live public URL
+- update the in-app Settings privacy-policy link to that final URL
+- enter the same final URL in App Store Connect
+
+### Audio
+An implemented audio system now exists.
+
+**Current behavior:**
+- `AudioManager` owns background music and sound-effect playback
+- `AudioScreen` maps app screens to music tracks (home, biome map, gameplay, victory, loss)
+- `SettingsStore` independently controls `backgroundMusicEnabled` and `gameSoundsEnabled`
+- Audio is synchronized from `ReveliaApp` and screen transitions in `RootView` / `BiomeSelectView`
+
+**Still to finish:**
+- Accessibility and comfort improvements, especially Reduce Motion / audio polish alignment
+- Final asset-completeness audit
+- Optional future work: music and SFX volume sliders
 - All sourced audio must be tracked in `THIRD-PARTY-LICENSES.md` with license verification
 
+### Release Notes for Future Claude Sessions
+- Campaign map now has separate square and hex continent art assets
+- The map toggle button previews the destination world, not the current one
+- Level icon coordinates are maintained in `Utilities/BiomeLevelLayout.swift`; hex and square share the same arrays
+- `LevelSelectView` has a built-in coordinate edit/export workflow for layout tuning
+- Specimen collection UI is live; collection hub and per-biome display rooms are no longer placeholder work
+- Settings now distinguish between background music and game sounds
+
 ### Future Features
-- **Tutorial system** — In progress. Guided L1 onboarding (scripted board, step-by-step with spotlight) + biome intro tooltips on first level of each biome. Tutorial button on home screen will reset and replay. Implementation has caused layout regressions — being fixed incrementally.
-- **Audio system** — Not started. SFX + ambient biome music needed. `SettingsStore.soundEnabled` toggle wired but no AudioManager exists yet.
 - **Save/resume system** — Not started. Currently quitting mid-level loses all progress on that level.
-- **Specimen Collection** — Fully designed (see above), not yet built
 - **Daily challenge mode** — One daily board, same seed for all players, time/score leaderboard display
 - **iOS port** — Primary revenue opportunity after Mac launch
 - **Monetization** — Free core game + optional rewarded ads + one-time Pro unlock ($4–6, removes ads)

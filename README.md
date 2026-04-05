@@ -1,17 +1,17 @@
-# Signalfield — Cowork Project Setup
+# Revelia — Cowork Project Setup
 
 ## What's In This Folder
 
-This is your complete Cowork workspace for building Signalfield from
+This is your complete Cowork workspace for building Revelia from
 concept to App Store. Every file is tailored to this specific project.
 
 ```
-signalfield-cowork/
+revelia-cowork/
 ├── CLAUDE.md                              ← Master briefing (auto-loaded every session)
 ├── README.md                              ← You're reading this
 ├── reference/
 │   ├── spec/
-│   │   └── signalfield-spec.md            ← The original game spec (source of truth)
+│   │   └── revelia-spec.md            ← The original game spec (source of truth)
 │   ├── brand/                             ← Put logo, palette, fonts here as you create them
 │   ├── competitors/                       ← Screenshots, notes on Hexcells/Tametsi/etc.
 │   └── apple-guidelines/                  ← Relevant HIG excerpts, review guidelines
@@ -69,7 +69,7 @@ automatically. For example:
 - "Create a test plan for Biome 2" → loads qa-testing skill
 - "What should the color palette look like?" → loads art-assets skill
 - "What sounds do I need for the Frozen Mirrors biome?" → loads sound-audio skill
-- "Can I trademark the name Signalfield?" → loads legal skill
+- "Can I trademark the name Revelia?" → loads legal skill
 - "How should VoiceOver describe a tagged tile?" → loads ux-accessibility skill
 - "What metrics should I track per level?" → loads analytics skill
 - "How do I set up string catalogs in Xcode?" → loads localization skill

@@ -1,4 +1,4 @@
-# Signalfield — Pre-Launch Checklist
+# Revelia — Pre-Launch Checklist
 **Generated:** 2026-03-18
 **Status:** Active development — campaign screens complete, entering polish phase
 **Based on:** All 13 skill files + full codebase audit
@@ -50,7 +50,7 @@ Features called out in the spec or skill files that don't yet exist in the codeb
 
 ### First-Launch Experience
 - [ ] 🔴 **Glyph choice screen on first launch** — Show the player a side-by-side preview of Glyph vs. Number mode and let them choose before entering the game. UX skill calls this a must-ship requirement.
-- [ ] 🟡 **Brief splash screen** — Signalfield logo + tagline (2–3 seconds on first launch).
+- [ ] 🟡 **Brief splash screen** — Revelia logo + tagline (2–3 seconds on first launch).
 
 ### Chording
 - [ ] 🟡 **Chording (Shift-click)** — Verify this is implemented. Shift-click a revealed tile whose signal count equals adjacent confirmed tags to auto-reveal remaining neighbors. Do NOT tutorial this — let experienced players discover it.
@@ -133,7 +133,7 @@ The entire audio system is missing. No `AudioManager`, no SFX, no ambient tracks
 
 ## 🧪 6. QA & Testing
 
-- [ ] 🔴 **Unit tests are empty** — `SignalfieldTests.swift` is boilerplate only. Minimum required tests:
+- [ ] 🔴 **Unit tests are empty** — `ReveliaTests.swift` is boilerplate only. Minimum required tests:
   - `SplitMix64`: same seed → same sequence, different seeds diverge
   - `BoardGenerator`: dimensions match spec, hazard count matches density, 3×3 safe zone enforced
   - `RuleEngine.getClue`: correct output for each biome variant
@@ -162,9 +162,9 @@ The entire audio system is missing. No `AudioManager`, no SFX, no ambient tracks
 - [ ] 🔴 **Privacy policy published online** — Required by Apple even for zero-data apps. Must be a live URL. Host on GitHub Pages (free). Template in the legal skill.
 - [ ] 🔴 **Privacy policy URL in App Store Connect** — Can't submit without it.
 - [ ] 🔴 **Audio asset license tracking** — Create `THIRD-PARTY-LICENSES.md` to document all sourced SFX/ambient audio. Required for App Store compliance.
-- [ ] 🟡 **Trademark search for "Signalfield"** — Search USPTO (tess2.uspto.gov) and App Store before launch. Backup names ready: "Signalfield: Logic Extraction" or "Signalfield Puzzle."
-- [ ] 🟡 **Domain name registration** — Secure `signalfield.com`, `.app`, or `.game`
-- [ ] 🟡 **Social media handle reservation** — @signalfield on Twitter/X before someone else takes it
+- [ ] 🟡 **Trademark search for "Revelia"** — Search USPTO (tess2.uspto.gov) and App Store before launch. Backup names ready: "Revelia: Logic Extraction" or "Revelia Puzzle."
+- [ ] 🟡 **Domain name registration** — Secure `revelia.com`, `.app`, or `.game`
+- [ ] 🟡 **Social media handle reservation** — @revelia on Twitter/X before someone else takes it
 - [ ] 🟢 **US Trademark filing** — ~$250–350, Class 9. File before or at launch; protection dates back to filing.
 - [ ] 🟢 **US Copyright registration** — $65 online, strengthens position against clones.
 
@@ -172,12 +172,12 @@ The entire audio system is missing. No `AudioManager`, no SFX, no ambient tracks
 
 ## 🏪 9. App Store Submission Prep
 
-- [ ] 🔴 **Bundle identifier** set: `com.[yourdomain].signalfield`
+- [ ] 🔴 **Bundle identifier** set: `com.[yourdomain].revelia`
 - [ ] 🔴 **App Sandbox entitlements** — Enable App Sandbox + Hardened Runtime in Xcode project settings. Only needs file container access (Application Support). No network, no camera, no location.
 - [ ] 🔴 **App version 1.0.0 / Build 1** set in Xcode
 - [ ] 🔴 **App Store Connect record created** — App name, category (Games > Puzzle), age rating questionnaire
 - [ ] 🔴 **App Store metadata written:**
-  - Name: "Signalfield" (verify global uniqueness in App Store Connect)
+  - Name: "Revelia" (verify global uniqueness in App Store Connect)
   - Subtitle: "Logic Puzzle · Signal & Extract" (30 char max)
   - Description: hook + gameplay + features + accessibility + differentiators (4000 char max)
   - Keywords: `puzzle,logic,deduction,strategy,brain,grid,campaign,biomes,signals,extraction` (100 char max)
@@ -192,12 +192,12 @@ The entire audio system is missing. No `AudioManager`, no SFX, no ambient tracks
 
 ## 📣 10. Marketing
 
-- [ ] 🔴 **Support email address** — `signalfield@yourdomain.com` or dedicated Gmail. Goes in App Store listing, privacy policy, and in-app Settings. Required at launch.
+- [ ] 🔴 **Support email address** — `revelia@yourdomain.com` or dedicated Gmail. Goes in App Store listing, privacy policy, and in-app Settings. Required at launch.
 - [ ] 🟡 **Landing page** — One-page site with: game name + tagline, 3–4 screenshots, "coming to Mac App Store" badge, email signup. Can be GitHub Pages.
 - [ ] 🟡 **Press kit** — Fact sheet, short + long description, 5–10 PNGs (uncompressed), 2–3 gameplay GIFs, logo, trailer link. Host on presskit.html or the landing page.
 - [ ] 🟡 **Gameplay trailer** — Even a 30–60 second screen recording with music. Shows cascades, biome mechanics, the map.
 - [ ] 🟡 **Devlogs (4–6 posts)** — Post to r/indiegaming, r/macgaming, r/puzzlevideogames, IndieDB 4–8 weeks before launch. Show gameplay GIFs and interesting design decisions.
-- [ ] 🟡 **Social media accounts** — Reserve @signalfield handle on Twitter/X before launch
+- [ ] 🟡 **Social media accounts** — Reserve @revelia handle on Twitter/X before launch
 - [ ] 🟡 **Launch week press outreach** — Email 20–30 outlets and YouTubers who cover puzzle/indie games 2 weeks before launch. Include: hook, trailer link, press kit link, promo code offer.
 - [ ] 🟡 **Launch day Reddit posts** — r/macgaming, r/indiegaming, r/puzzlevideogames. Be genuine, show gameplay, don't hard-sell.
 - [ ] 🟢 **Product Hunt submission** — Free exposure on launch day.

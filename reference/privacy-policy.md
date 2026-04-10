@@ -1,10 +1,10 @@
 # Revelia Privacy Policy
 
-Effective date: April 5, 2026
+Effective date: April 10, 2026
 
 ## Overview
 
-Revelia is a single-player macOS puzzle game.
+Revelia is a single-player macOS puzzle game published by Sabaset Studios LLC.
 
 Revelia does not require an account to play. Revelia does not use third-party advertising SDKs or third-party in-app analytics SDKs. Revelia stores core gameplay-related information locally on your Mac so the game can remember your settings, progress, local leaderboard data, and suspended runs.
 
@@ -14,9 +14,9 @@ Revelia does not require internet access for normal gameplay.
 
 If you have questions about this Privacy Policy or privacy-related requests, contact:
 
-- Developer: [Your Name or Studio Name]
-- Email: [your privacy/support email]
-- Website: [your website]
+- Developer: Sabaset Studios LLC
+- Email: gregk@sabasetstudios.com
+- Website: https://privacy.sabasetstudios.com
 
 ## Information Stored Locally on Your Device
 
@@ -89,4 +89,4 @@ We may update this Privacy Policy from time to time. If we do, we will post the 
 
 For privacy questions, support requests, or data-related inquiries, contact:
 
-- [your privacy/support email]
+- gregk@sabasetstudios.com

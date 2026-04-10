@@ -231,7 +231,7 @@ struct SettingsView: View {
     }
 
     private func openPrivacyPolicy() {
-        if let url = URL(string: "https://gkdos35.github.io/Revelia/privacy.html") {
+        if let url = URL(string: "https://privacy.sabasetstudios.com") {
             NSWorkspace.shared.open(url)
         }
     }

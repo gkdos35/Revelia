@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Illoria Support | Sabaset Studios LLC</title>
+  <style>
+    :root {
+      --bg: #f6f1e6;
+      --card: #fffaf0;
+      --text: #2f241a;
+      --muted: #6b5a49;
+      --border: #d5c2a7;
+      --accent: #7aaa58;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.35), rgba(0,0,0,0.03)),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    .wrap {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 40px 20px 72px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 28px;
+      box-shadow: 0 18px 40px rgba(47, 36, 26, 0.08);
+    }
+
+    h1, h2 {
+      line-height: 1.2;
+      margin: 0 0 14px;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 2.8rem);
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      margin-top: 30px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(213, 194, 167, 0.7);
+    }
+
+    p, ul {
+      margin: 0 0 14px;
+    }
+
+    ul {
+      padding-left: 22px;
+    }
+
+    .eyebrow {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 18px;
+    }
+
+    .callout {
+      background: rgba(122, 170, 88, 0.10);
+      border-left: 4px solid var(--accent);
+      padding: 14px 16px;
+      border-radius: 10px;
+      margin: 18px 0 8px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: rgba(122, 170, 88, 0.14);
+      padding: 10px 14px;
+      color: var(--text);
+      font: inherit;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 280px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fffdf7;
+      color: var(--text);
+      font: 0.95rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      line-height: 1.5;
+      padding: 14px;
+      resize: vertical;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 0.95rem;
+      min-height: 1.5em;
+    }
+
+    a {
+      color: inherit;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <h1>Illoria Support</h1>
+      <p class="eyebrow">Sabaset Studios LLC</p>
+
+      <div class="callout">
+        For bugs, accessibility concerns, privacy questions, support requests, or other concerns about Illoria, send a report to <a href="mailto:gregk@sabasetstudios.com">gregk@sabasetstudios.com</a>.
+      </div>
+
+      <h2>Send a Report</h2>
+      <p>
+        Choose the option that works best on your Mac. Gmail opens in your browser; copying the template works with any webmail service.
+      </p>
+
+      <div class="actions">
+        <a class="button primary" id="gmail-link" href="https://mail.google.com/mail/?view=cm&fs=1&to=gregk@sabasetstudios.com&su=Illoria%20problem%20report">Open Gmail Draft</a>
+        <button class="button" id="copy-template" type="button">Copy Report Template</button>
+        <a class="button" id="email-link" href="mailto:gregk@sabasetstudios.com?subject=Illoria%20problem%20report">Use Default Email App</a>
+      </div>
+      <p class="status" id="copy-status" aria-live="polite"></p>
+
+      <h2>Report Template</h2>
+      <textarea id="report-template" readonly>Illoria problem report
+
+What happened?
+
+
+What did you expect?
+
+
+Can you reproduce it?
+
+
+Level:
+Seed:
+Screenshot attached?:
+
+Diagnostics:
+App version:
+macOS:</textarea>
+
+      <h2>Helpful Details</h2>
+      <p>
+        If you are reporting a bug, include as much of this as you can:
+      </p>
+      <ul>
+        <li>What happened</li>
+        <li>What you expected to happen</li>
+        <li>Whether you can reproduce it</li>
+        <li>The level and seed, if available</li>
+        <li>Your macOS version and Illoria app version</li>
+        <li>A screenshot, if it helps explain the issue</li>
+      </ul>
+
+      <h2>From Inside Illoria</h2>
+      <p>
+        In the app, open Settings and choose Report a Problem to open this page in your default browser with basic app and macOS version details added to the template.
+      </p>
+
+      <h2>Privacy</h2>
+      <p>
+        Read the Illoria Privacy Policy at <a href="https://privacy.sabasetstudios.com">https://privacy.sabasetstudios.com</a>.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const supportEmail = "gregk@sabasetstudios.com";
+    const subject = "Illoria problem report";
+    const params = new URLSearchParams(window.location.search);
+    const appVersion = params.get("appVersion") || "";
+    const macOS = params.get("macOS") || "";
+    const template = `Illoria problem report
+
+What happened?
+
+
+What did you expect?
+
+
+Can you reproduce it?
+
+
+Level:
+Seed:
+Screenshot attached?:
+
+Diagnostics:
+App version: ${appVersion}
+macOS: ${macOS}`;
+
+    const templateField = document.getElementById("report-template");
+    const gmailLink = document.getElementById("gmail-link");
+    const emailLink = document.getElementById("email-link");
+    const copyButton = document.getElementById("copy-template");
+    const copyStatus = document.getElementById("copy-status");
+
+    templateField.value = template;
+    gmailLink.href = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(supportEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(template)}`;
+    emailLink.href = `mailto:${supportEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(template)}`;
+
+    copyButton.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(template);
+        copyStatus.textContent = "Copied. Paste this into Gmail or your preferred webmail service.";
+      } catch {
+        templateField.focus();
+        templateField.select();
+        copyStatus.textContent = "Select the template text and copy it manually.";
+      }
+    });
+  </script>
+</body>
+</html>

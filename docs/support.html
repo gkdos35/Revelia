@@ -143,7 +143,7 @@
 
       <h2>Send a Report</h2>
       <p>
-        Choose the option that works best on your Mac. Gmail opens in your browser; copying the template works with any webmail service.
+        Choose the option that works best on your device. Gmail opens in your browser; copying the template works with any webmail service.
       </p>
 
       <div class="actions">
@@ -171,7 +171,7 @@ Screenshot attached?:
 
 Diagnostics:
 App version:
-macOS:</textarea>
+Device / OS:</textarea>
 
       <h2>Helpful Details</h2>
       <p>
@@ -182,13 +182,13 @@ macOS:</textarea>
         <li>What you expected to happen</li>
         <li>Whether you can reproduce it</li>
         <li>The level and seed, if available</li>
-        <li>Your macOS version and Illoria app version</li>
+        <li>Your device model, OS version, and Illoria app version</li>
         <li>A screenshot, if it helps explain the issue</li>
       </ul>
 
       <h2>From Inside Illoria</h2>
       <p>
-        In the app, open Settings and choose Report a Problem to open this page in your default browser with basic app and macOS version details added to the template.
+        In the app, open Settings and choose Report a Problem to open this page in your default browser with basic app and device/OS details added to the template.
       </p>
 
       <h2>Privacy</h2>
@@ -203,7 +203,7 @@ macOS:</textarea>
     const subject = "Illoria problem report";
     const params = new URLSearchParams(window.location.search);
     const appVersion = params.get("appVersion") || "";
-    const macOS = params.get("macOS") || "";
+    const deviceOS = params.get("deviceOS") || params.get("iOS") || params.get("macOS") || "";
     const template = `Illoria problem report
 
 What happened?
@@ -221,7 +221,7 @@ Screenshot attached?:
 
 Diagnostics:
 App version: ${appVersion}
-macOS: ${macOS}`;
+Device / OS: ${deviceOS}`;
 
     const templateField = document.getElementById("report-template");
     const gmailLink = document.getElementById("gmail-link");

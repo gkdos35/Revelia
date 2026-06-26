@@ -1,25 +1,112 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PennyPocket</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <div class="page">
-    <div class="nav" aria-label="Release pages">
-      <a href="privacy.html">Privacy</a>
-      <a href="support.html">Support</a>
-    </div>
-    <div class="card">
-      <h1>PennyPocket</h1>
-      <p class="meta">Local-first chore and allowance planning for families.</p>
-      <p>Free for 21 days, then one family purchase keeps the app forever. No monthly or yearly subscription.</p>
-      <p>PennyPocket helps families manage recurring chores, one-time chores, allowance balances, rewards, payout requests, and weekly summaries on device.</p>
-      <p>The app does not require a developer account. Family sync uses your family's own iCloud through Apple CloudKit; PennyPocket has no server of its own.</p>
-    </div>
-    <div class="footer">Published for PennyPocket App Store review and family support.</div>
-  </div>
-</body>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PennyPocket</title>
+    <meta
+      name="description"
+      content="PennyPocket — a local-first chore and allowance app for families."
+    >
+    <style>
+      :root {
+        color-scheme: light;
+        --page: #ece2cd;
+        --paper: #f9f5ed;
+        --ink: #3c3025;
+        --muted: rgba(60, 48, 37, 0.64);
+        --line: rgba(60, 48, 37, 0.14);
+        --sage: #647949;
+        --copper: #b86b2f;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--page);
+        color: var(--ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.6;
+      }
+
+      .wrap {
+        width: min(920px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 48px 0;
+      }
+
+      .card {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: clamp(24px, 5vw, 56px);
+        box-shadow: 0 18px 45px rgba(60, 48, 37, 0.10);
+      }
+
+      h1 { line-height: 1.18; margin: 0; font-size: clamp(2rem, 6vw, 4rem); }
+      p { margin: 14px 0 0; font-size: 1rem; }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        color: var(--copper);
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .lede { margin-top: 18px; color: var(--muted); font-size: 1.1rem; }
+
+      .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid var(--sage);
+        border-radius: 12px;
+        background: var(--sage);
+        padding: 11px 16px;
+        color: #ffffff;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .button.secondary { background: rgba(100, 121, 73, 0.12); color: var(--ink); }
+
+      footer {
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <article class="card">
+        <p class="eyebrow">Sabaset Studios LLC</p>
+        <h1>PennyPocket</h1>
+        <p class="lede">Chores and allowance, made simple — pay once, no subscription.</p>
+        <p>
+          PennyPocket helps families manage recurring chores, one-time chores, allowance
+          balances, rewards, payout requests, and weekly summaries — all on device.
+        </p>
+        <p>
+          The app does not require a developer account. Family sync uses your family's own iCloud
+          through Apple CloudKit; PennyPocket has no server of its own.
+        </p>
+
+        <div class="actions">
+          <a class="button" href="privacy.html">Privacy Policy</a>
+          <a class="button secondary" href="support.html">Support</a>
+        </div>
+
+        <footer>
+          Published for PennyPocket App Store review and family support.
+        </footer>
+      </article>
+    </main>
+  </body>
 </html>

@@ -1,41 +1,247 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PennyPocket Support</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <div class="page">
-    <div class="nav" aria-label="Release pages">
-      <a href="index.html">Home</a>
-      <a href="privacy.html">Privacy</a>
-    </div>
-    <div class="card">
-      <h1>PennyPocket Support</h1>
-      <p class="meta">Local-first chore and allowance planning for families.</p>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PennyPocket Support | Sabaset Studios LLC</title>
+    <meta
+      name="description"
+      content="Support page for PennyPocket, a local-first chore and allowance app for families."
+    >
+    <style>
+      :root {
+        color-scheme: light;
+        --page: #ece2cd;
+        --paper: #f9f5ed;
+        --ink: #3c3025;
+        --muted: rgba(60, 48, 37, 0.64);
+        --line: rgba(60, 48, 37, 0.14);
+        --sage: #647949;
+        --copper: #b86b2f;
+      }
 
-      <h2>Common Questions</h2>
+      * { box-sizing: border-box; }
 
-      <h3>Does PennyPocket sync between devices?</h3>
-      <p>PennyPocket stores your family's data locally and can sync parent and assigned-child devices through your family's own iCloud using Apple CloudKit. PennyPocket does not run a developer server.</p>
+      body {
+        margin: 0;
+        background: var(--page);
+        color: var(--ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.6;
+      }
 
-      <h3>Does PennyPocket require an account?</h3>
-      <p>No. The app does not require a login or PennyPocket account.</p>
+      .wrap {
+        width: min(920px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 48px 0;
+      }
 
-      <h3>Where is my data stored?</h3>
-      <p>PennyPocket stores profiles, boards, completions, rewards, payout requests, reminders, activity history, and local device status on the device.</p>
+      .card {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: clamp(24px, 5vw, 56px);
+        box-shadow: 0 18px 45px rgba(60, 48, 37, 0.10);
+      }
 
-      <h3>Does PennyPocket upload data to iCloud?</h3>
-      <p>Yes, when a parent enables Family Sync. PennyPocket syncs parent and assigned-child devices through your family's own iCloud using Apple CloudKit. PennyPocket does not run a developer server.</p>
+      h1, h2, h3 { line-height: 1.18; margin: 0; }
+      h1 { font-size: clamp(2rem, 6vw, 4rem); letter-spacing: 0; }
+      h2 { margin-top: 36px; font-size: clamp(1.25rem, 3vw, 1.7rem); }
+      h3 { margin-top: 22px; font-size: 1.05rem; }
 
-      <h3>How do I remove data?</h3>
-      <p>Delete profiles, boards, chores, rewards, one-time chores, and payout requests inside the app. Deleting the app removes PennyPocket's local app data according to iOS behavior.</p>
+      p, ul { font-size: 1rem; }
+      p { margin: 12px 0 0; }
+      ul { margin: 12px 0 0; padding-left: 1.4rem; }
+      li + li { margin-top: 6px; }
 
-      <h2>Contact</h2>
-      <p>For bugs, accessibility concerns, privacy questions, or support requests about PennyPocket, email <a href="mailto:gregk@sabasetstudios.com?subject=PennyPocket%20support%20request">gregk@sabasetstudios.com</a>.</p>
-    </div>
-  </div>
-</body>
+      textarea {
+        width: 100%;
+        min-height: 240px;
+        margin-top: 14px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fffaf0;
+        color: var(--ink);
+        font: 0.95rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        line-height: 1.5;
+        padding: 14px;
+        resize: vertical;
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        color: var(--copper);
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .lede { margin-top: 18px; color: var(--muted); font-size: 1.1rem; }
+
+      .callout {
+        margin-top: 24px;
+        padding: 16px 18px;
+        border-left: 4px solid var(--sage);
+        border-radius: 12px;
+        background: rgba(100, 121, 73, 0.10);
+      }
+
+      .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: rgba(100, 121, 73, 0.12);
+        padding: 10px 14px;
+        color: var(--ink);
+        font: inherit;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .button.primary {
+        background: var(--sage);
+        border-color: var(--sage);
+        color: #ffffff;
+        font-weight: 700;
+      }
+
+      .status { min-height: 1.5em; color: var(--muted); font-size: 0.95rem; }
+
+      a {
+        color: var(--sage);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <article class="card">
+        <p class="eyebrow">Sabaset Studios LLC</p>
+        <h1>PennyPocket Support</h1>
+        <p class="lede">
+          For bugs, accessibility concerns, privacy questions, support requests, or other
+          concerns about PennyPocket, send a report to
+          <a href="mailto:gregk@sabasetstudios.com">gregk@sabasetstudios.com</a>.
+        </p>
+
+        <h2>Send A Report</h2>
+        <p>
+          Choose the option that works best for you. Gmail opens in your browser; copying the
+          template works with any email service.
+        </p>
+
+        <div class="actions">
+          <a class="button primary" id="gmail-link" href="https://mail.google.com/mail/?view=cm&fs=1&to=gregk@sabasetstudios.com&su=PennyPocket%20support%20request">Open Gmail Draft</a>
+          <button class="button" id="copy-template" type="button">Copy Report Template</button>
+          <a class="button" id="email-link" href="mailto:gregk@sabasetstudios.com?subject=PennyPocket%20support%20request">Use Default Email App</a>
+        </div>
+        <p class="status" id="copy-status" aria-live="polite"></p>
+
+        <h2>Report Template</h2>
+        <textarea id="report-template" readonly>PennyPocket support request
+
+What happened?
+
+
+What did you expect?
+
+
+Can you reproduce it?
+
+
+Device:
+App version:
+Screenshot attached?:</textarea>
+
+        <h2>Common Questions</h2>
+
+        <h3>Does PennyPocket sync between devices?</h3>
+        <p>
+          PennyPocket stores your family's data locally and can sync parent and assigned-child
+          devices through your family's own iCloud using Apple CloudKit. PennyPocket does not run
+          a developer server.
+        </p>
+
+        <h3>Does PennyPocket require an account?</h3>
+        <p>No. The app does not require a login or PennyPocket account.</p>
+
+        <h3>Where is my data stored?</h3>
+        <p>
+          PennyPocket stores profiles, boards, completions, rewards, payout requests, reminders,
+          activity history, and local device status on the device.
+        </p>
+
+        <h3>How do I remove data?</h3>
+        <p>
+          Delete profiles, boards, chores, rewards, one-time chores, and payout requests inside
+          the app. Deleting the app removes PennyPocket's local app data according to iOS behavior.
+        </p>
+
+        <h2>Helpful Details</h2>
+        <p>If you are reporting a bug, include as much of this as you can:</p>
+        <ul>
+          <li>what happened</li>
+          <li>what you expected to happen</li>
+          <li>whether you can reproduce it</li>
+          <li>your device model and operating system version</li>
+          <li>the PennyPocket app version, if available</li>
+          <li>a screenshot, if it helps explain the issue</li>
+        </ul>
+
+        <h2>Privacy</h2>
+        <p>
+          Read the PennyPocket Privacy Policy at
+          <a href="https://privacy.sabasetstudios.com/pennypocket/privacy.html">https://privacy.sabasetstudios.com/pennypocket/privacy.html</a>.
+        </p>
+      </article>
+    </main>
+
+    <script>
+      const supportEmail = "gregk@sabasetstudios.com";
+      const subject = "PennyPocket support request";
+      const params = new URLSearchParams(window.location.search);
+      const appVersion = params.get("appVersion") || "";
+      const device = params.get("device") || "";
+      const template = `PennyPocket support request
+
+What happened?
+
+
+What did you expect?
+
+
+Can you reproduce it?
+
+
+Device: ${device}
+App version: ${appVersion}
+Screenshot attached?:`;
+
+      const templateField = document.getElementById("report-template");
+      const gmailLink = document.getElementById("gmail-link");
+      const emailLink = document.getElementById("email-link");
+      const copyButton = document.getElementById("copy-template");
+      const copyStatus = document.getElementById("copy-status");
+
+      templateField.value = template;
+      gmailLink.href = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(supportEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(template)}`;
+      emailLink.href = `mailto:${supportEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(template)}`;
+
+      copyButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(template);
+          copyStatus.textContent = "Copied. Paste this into Gmail or your preferred email service.";
+        } catch {
+          templateField.focus();
+          templateField.select();
+          copyStatus.textContent = "Select the template text and copy it manually.";
+        }
+      });
+    </script>
+  </body>
 </html>

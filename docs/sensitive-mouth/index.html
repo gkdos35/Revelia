@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#fff9f2">
+    <meta name="robots" content="noindex,follow">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>QuietPalate | Support and Privacy</title>
+    <meta
+      name="description"
+      content="Official support and privacy information for QuietPalate, a local-first ingredient-label companion being developed with oral lichen planus in mind."
+    >
+    <link rel="canonical" href="https://privacy.sabasetstudios.com/quietpalate/">
+    <meta http-equiv="refresh" content="0; url=../quietpalate/">
+    <style>
+      :root {
+        color-scheme: light;
+        --page: #f1eef8;
+        --paper: #fff9f2;
+        --ink: #20213f;
+        --muted: #626278;
+        --line: #dedce8;
+        --indigo: #4d4fb3;
+        --deep-indigo: #30317a;
+        --coral: #f0645a;
+        --lilac: #e3dfff;
+        --mint: #ddf3e9;
+      }
+
+      * { box-sizing: border-box; }
+
+      html { scroll-behavior: smooth; }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at 8% 0%, rgba(168, 167, 255, 0.24), transparent 34rem),
+          radial-gradient(circle at 92% 10%, rgba(240, 100, 90, 0.14), transparent 30rem),
+          var(--page);
+        color: var(--ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.65;
+      }
+
+      .skip-link {
+        position: absolute;
+        left: 16px;
+        top: -80px;
+        z-index: 2;
+        border-radius: 10px;
+        background: var(--deep-indigo);
+        color: #fff;
+        padding: 10px 14px;
+      }
+
+      .skip-link:focus { top: 16px; }
+
+      .wrap {
+        width: min(960px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 48px 0;
+      }
+
+      .card {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: var(--paper);
+        box-shadow: 0 18px 45px rgba(48, 49, 122, 0.10);
+      }
+
+      .hero { padding: clamp(28px, 6vw, 64px); }
+
+      h1, h2 { line-height: 1.16; }
+
+      h1 {
+        max-width: 12ch;
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2.8rem, 9vw, 5.8rem);
+        font-weight: 500;
+        letter-spacing: -0.035em;
+      }
+
+      h2 {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(1.45rem, 4vw, 2rem);
+        font-weight: 500;
+      }
+
+      p { margin: 14px 0 0; }
+
+      .eyebrow {
+        margin: 0 0 14px;
+        color: var(--indigo);
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+      }
+
+      .lede {
+        max-width: 660px;
+        margin-top: 20px;
+        color: var(--muted);
+        font-size: clamp(1.08rem, 2.5vw, 1.3rem);
+      }
+
+      .status {
+        display: inline-flex;
+        margin-top: 24px;
+        border-radius: 999px;
+        background: var(--lilac);
+        padding: 8px 12px;
+        color: var(--deep-indigo);
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 28px;
+      }
+
+      .button {
+        display: inline-flex;
+        min-height: 46px;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--indigo);
+        border-radius: 14px;
+        background: var(--indigo);
+        padding: 10px 16px;
+        color: #fff;
+        font-weight: 750;
+        text-decoration: none;
+      }
+
+      .button.secondary { background: transparent; color: var(--deep-indigo); }
+
+      .button:focus-visible, a:focus-visible {
+        outline: 3px solid var(--coral);
+        outline-offset: 3px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-top: 1px solid var(--line);
+      }
+
+      .panel { padding: clamp(24px, 4vw, 38px); }
+      .panel + .panel { border-left: 1px solid var(--line); }
+      .panel:nth-child(2) { background: var(--mint); }
+      .panel:nth-child(3) { background: var(--lilac); }
+      .panel p { color: var(--muted); }
+
+      a { color: var(--deep-indigo); text-underline-offset: 3px; }
+
+      footer {
+        padding: 20px clamp(28px, 6vw, 64px) 28px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      @media (max-width: 720px) {
+        .wrap { padding: 16px 0; }
+        .card { border-radius: 18px; }
+        .grid { grid-template-columns: 1fr; }
+        .panel + .panel { border-left: 0; border-top: 1px solid var(--line); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <main class="wrap" id="main">
+      <article class="card">
+        <header class="hero">
+          <p class="eyebrow">Sabaset Studios LLC</p>
+          <h1>QuietPalate</h1>
+          <p class="lede">
+            A local-first ingredient-label companion being developed with oral lichen planus in
+            mind. It helps people inspect the exact words on a package against a bounded evidence
+            library while keeping uncertainty visible.
+          </p>
+          <p class="status">Development candidate</p>
+          <div class="actions" aria-label="QuietPalate pages">
+            <a class="button" href="support.html">Support</a>
+            <a class="button secondary" href="privacy.html">Privacy Policy</a>
+          </div>
+        </header>
+
+        <div class="grid">
+          <section class="panel">
+            <h2>What it is</h2>
+            <p>
+              A way to capture or enter ingredient wording, review what was recognised, and read
+              source-linked information without reducing a whole product to a safety score.
+            </p>
+          </section>
+          <section class="panel">
+            <h2>Private by default</h2>
+            <p>
+              Saved formulations and personal records stay encrypted on the device. There is no
+              QuietPalate account, cloud sync, advertising, or owner-operated health-data
+              analytics in the current candidate.
+            </p>
+          </section>
+          <section class="panel">
+            <h2>Important limit</h2>
+            <p>
+              QuietPalate does not diagnose a mouth change, interpret lesion photos, or advise
+              medication or dental-work changes. It is not a substitute for a dentist or doctor.
+            </p>
+          </section>
+        </div>
+
+        <footer>
+          Official support and privacy pages for QuietPalate. Last updated August 11, 2026.
+        </footer>
+      </article>
+    </main>
+  </body>
+</html>

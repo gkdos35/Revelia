@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Somewhere Wild Support | Sabaset Studios LLC</title>
+    <meta
+      name="description"
+      content="Support page for Somewhere Wild, a child-friendly animal discovery game for families."
+    >
+    <style>
+      :root {
+        color-scheme: light;
+        --page: #ede3cc;
+        --paper: #fbf4e6;
+        --ink: #2a241b;
+        --muted: rgba(42, 36, 27, 0.68);
+        --line: rgba(42, 36, 27, 0.14);
+        --accent: #446b57;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--page);
+        color: var(--ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.6;
+      }
+
+      .wrap {
+        width: min(920px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 48px 0;
+      }
+
+      .card {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: clamp(24px, 5vw, 56px);
+        box-shadow: 0 18px 45px rgba(42, 36, 27, 0.10);
+      }
+
+      h1,
+      h2 {
+        line-height: 1.18;
+        margin: 0;
+      }
+
+      h1 {
+        font-size: clamp(2rem, 6vw, 4rem);
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin-top: 36px;
+        font-size: clamp(1.25rem, 3vw, 1.7rem);
+      }
+
+      p,
+      ul {
+        font-size: 1rem;
+      }
+
+      p {
+        margin: 14px 0 0;
+      }
+
+      ul {
+        margin: 14px 0 0;
+        padding-left: 1.4rem;
+      }
+
+      li + li {
+        margin-top: 6px;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 260px;
+        margin-top: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fffaf0;
+        color: var(--ink);
+        font: 0.95rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        line-height: 1.5;
+        padding: 14px;
+        resize: vertical;
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        color: var(--accent);
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .lede {
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 1.1rem;
+      }
+
+      .callout {
+        margin-top: 24px;
+        padding: 16px 18px;
+        border-left: 4px solid var(--accent);
+        border-radius: 8px;
+        background: rgba(68, 107, 87, 0.10);
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(68, 107, 87, 0.12);
+        padding: 10px 14px;
+        color: var(--ink);
+        font: inherit;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #ffffff;
+        font-weight: 700;
+      }
+
+      .status {
+        min-height: 1.5em;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <article class="card">
+        <p class="eyebrow">Sabaset Studios LLC</p>
+        <h1>Somewhere Wild Support</h1>
+        <p class="lede">
+          For bugs, accessibility concerns, privacy questions, support requests, or other concerns
+          about Somewhere Wild, send a report to
+          <a href="mailto:gregk@sabasetstudios.com">gregk@sabasetstudios.com</a>.
+        </p>
+
+        <div class="callout">
+          Please do not include a child's personal information, photos, videos, voice recordings,
+          precise location, or other sensitive information in support messages.
+        </div>
+
+        <h2>Send A Report</h2>
+        <p>
+          Choose the option that works best for you. Gmail opens in your browser; copying the
+          template works with any email service.
+        </p>
+
+        <div class="actions">
+          <a class="button primary" id="gmail-link" href="https://mail.google.com/mail/?view=cm&fs=1&to=gregk@sabasetstudios.com&su=Somewhere%20Wild%20support%20request">Open Gmail Draft</a>
+          <button class="button" id="copy-template" type="button">Copy Report Template</button>
+          <a class="button" id="email-link" href="mailto:gregk@sabasetstudios.com?subject=Somewhere%20Wild%20support%20request">Use Default Email App</a>
+        </div>
+        <p class="status" id="copy-status" aria-live="polite"></p>
+
+        <h2>Report Template</h2>
+        <textarea id="report-template" readonly>Somewhere Wild support request
+
+What happened?
+
+
+What did you expect?
+
+
+Can you reproduce it?
+
+
+Device:
+App version:
+Screenshot attached?:</textarea>
+
+        <h2>Helpful Details</h2>
+        <p>If you are reporting a bug, include as much of this as you can:</p>
+        <ul>
+          <li>what happened</li>
+          <li>what you expected to happen</li>
+          <li>whether you can reproduce it</li>
+          <li>your device model and operating system version</li>
+          <li>the Somewhere Wild app version, if available</li>
+          <li>a screenshot, if it helps explain the issue and does not include child personal information</li>
+        </ul>
+
+        <h2>Privacy</h2>
+        <p>
+          Read the Somewhere Wild Privacy Policy at
+          <a href="https://privacy.sabasetstudios.com/somewhere-wild/">https://privacy.sabasetstudios.com/somewhere-wild/</a>.
+        </p>
+      </article>
+    </main>
+
+    <script>
+      const supportEmail = "gregk@sabasetstudios.com";
+      const subject = "Somewhere Wild support request";
+      const params = new URLSearchParams(window.location.search);
+      const appVersion = params.get("appVersion") || "";
+      const device = params.get("device") || "";
+      const template = `Somewhere Wild support request
+
+What happened?
+
+
+What did you expect?
+
+
+Can you reproduce it?
+
+
+Device: ${device}
+App version: ${appVersion}
+Screenshot attached?:`;
+
+      const templateField = document.getElementById("report-template");
+      const gmailLink = document.getElementById("gmail-link");
+      const emailLink = document.getElementById("email-link");
+      const copyButton = document.getElementById("copy-template");
+      const copyStatus = document.getElementById("copy-status");
+
+      templateField.value = template;
+      gmailLink.href = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(supportEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(template)}`;
+      emailLink.href = `mailto:${supportEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(template)}`;
+
+      copyButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(template);
+          copyStatus.textContent = "Copied. Paste this into Gmail or your preferred email service.";
+        } catch {
+          templateField.focus();
+          templateField.select();
+          copyStatus.textContent = "Select the template text and copy it manually.";
+        }
+      });
+    </script>
+  </body>
+</html>
+

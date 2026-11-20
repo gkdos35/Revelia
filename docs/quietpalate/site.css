@@ -1,0 +1,294 @@
+/* One stylesheet for every QuietPalate page on the website.
+   Published as site.css beside the pages. */
+:root {
+  color-scheme: light;
+  --page: #f1eef8;
+  --paper: #fff9f2;
+  --ink: #20213f;
+  --muted: #5b5b72;
+  --line: #dedce8;
+  --indigo: #4d4fb3;
+  --deep-indigo: #30317a;
+  --coral: #f0645a;
+  --lilac: #e3dfff;
+  --mint: #ddf3e9;
+  --apricot: #ffe9b4;
+  --measure: 68ch;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(168, 167, 255, 0.24), transparent 34rem),
+    var(--page);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -80px;
+  z-index: 2;
+  border-radius: 10px;
+  background: var(--deep-indigo);
+  color: #fff;
+  padding: 10px 14px;
+}
+
+.skip-link:focus { top: 16px; }
+
+.wrap {
+  width: min(880px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 48px 0;
+}
+
+.card {
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--paper);
+  padding: clamp(24px, 6vw, 60px);
+  box-shadow: 0 18px 45px rgba(48, 49, 122, 0.10);
+}
+
+/* The same menu on every page; the page you are on is not a link. */
+nav.site {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 20px;
+  margin-bottom: 30px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.98rem;
+}
+
+nav.site .brand {
+  margin-right: auto;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.25rem;
+  text-decoration: none;
+}
+
+nav.site a { padding: 11px 0; }
+nav.site [aria-current="page"] {
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+nav.site a[aria-current="page"]:not(.brand) {
+  box-shadow: inset 0 -2px 0 var(--coral);
+}
+
+h1, h2, h3 { line-height: 1.18; }
+
+h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.3rem, 7vw, 4.2rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+h2 {
+  max-width: var(--measure);
+  margin: 40px 0 0;
+  padding-top: 26px;
+  border-top: 1px solid var(--line);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.35rem, 4vw, 1.8rem);
+  font-weight: 500;
+  scroll-margin-top: 16px;
+}
+
+h3 { margin: 24px 0 0; font-size: 1.08rem; }
+
+p, ul, ol { max-width: var(--measure); margin: 13px 0 0; }
+ul, ol { padding-left: 1.4rem; }
+li + li { margin-top: 7px; }
+
+.eyebrow {
+  margin: 0 0 14px;
+  color: var(--indigo);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.lede { color: var(--muted); font-size: 1.14rem; }
+.effective { margin-top: 10px; color: var(--muted); font-size: 0.98rem; }
+
+/* A few facts side by side. */
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin-top: 26px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--line);
+}
+
+.summary div { background: #fff; padding: 16px 18px; }
+.summary strong { display: block; }
+.summary span { color: var(--muted); font-size: 0.95rem; }
+
+/* The short version of a long page. */
+.plain {
+  margin-top: 24px;
+  border-radius: 16px;
+  background: var(--lilac);
+  padding: 18px 22px 20px;
+}
+
+.plain strong { font-size: 1.02rem; }
+.plain ul { margin-top: 8px; }
+
+/* Where the sections of a long page are. */
+.toc {
+  margin-top: 24px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  padding: 16px 22px 18px;
+}
+
+.toc strong { display: block; }
+.toc ol {
+  columns: 2;
+  column-gap: 32px;
+  max-width: none;
+  margin-top: 8px;
+  padding-left: 1.5rem;
+  font-size: 0.98rem;
+}
+
+.toc li { break-inside: avoid; }
+.toc li + li { margin-top: 4px; }
+
+.callout {
+  max-width: var(--measure);
+  margin-top: 24px;
+  border-left: 5px solid var(--coral);
+  border-radius: 14px;
+  background: var(--apricot);
+  padding: 17px 19px;
+}
+
+.boundary {
+  max-width: var(--measure);
+  margin-top: 22px;
+  border-radius: 16px;
+  background: var(--mint);
+  padding: 4px 20px 18px;
+}
+
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+
+.button {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--indigo);
+  border-radius: 14px;
+  background: transparent;
+  padding: 10px 18px;
+  color: var(--deep-indigo);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button.primary { background: var(--indigo); color: #fff; }
+.button:hover { background: var(--lilac); }
+.button.primary:hover { background: var(--deep-indigo); }
+
+/* Three things about the app, on the front page. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin-top: 36px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--line);
+}
+
+.panel { background: #fff; padding: clamp(20px, 3vw, 28px); }
+.panel:nth-child(2) { background: var(--mint); }
+.panel:nth-child(3) { background: var(--lilac); }
+.panel h2 {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 1.3rem;
+}
+
+.panel p { font-size: 1rem; }
+
+textarea {
+  display: block;
+  width: 100%;
+  max-width: var(--measure);
+  min-height: 390px;
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fffefb;
+  color: var(--ink);
+  font: 0.94rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  line-height: 1.5;
+  padding: 16px;
+  resize: vertical;
+}
+
+.status { min-height: 1.5em; color: var(--muted); font-size: 0.95rem; }
+
+a { color: var(--deep-indigo); text-underline-offset: 3px; }
+
+a:focus-visible, .button:focus-visible, textarea:focus-visible {
+  outline: 3px solid var(--coral);
+  outline-offset: 3px;
+}
+
+footer {
+  margin-top: 46px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.94rem;
+}
+
+footer p { max-width: none; margin: 0; }
+footer p + p { margin-top: 6px; }
+
+@media (max-width: 700px) {
+  body { font-size: 1rem; }
+  .wrap { padding: 16px 0; }
+  .card { border-radius: 18px; }
+  .summary, .grid { grid-template-columns: 1fr; }
+  .toc ol { columns: 1; }
+  nav.site { gap: 0 15px; font-size: 0.94rem; }
+  nav.site .brand { flex-basis: 100%; }
+}
+
+@media print {
+  body { background: #fff; }
+  .card { border: 0; box-shadow: none; padding: 0; }
+  nav.site, .skip-link, .toc, .actions { display: none; }
+  a { color: inherit; }
+}

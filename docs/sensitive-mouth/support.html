@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#fff9f2">
+    <meta name="robots" content="noindex,follow">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>QuietPalate Support | Sabaset Studios LLC</title>
+    <meta
+      name="description"
+      content="Official support page for QuietPalate. Report an app, ingredient-label, evidence-display, privacy, or accessibility issue."
+    >
+    <link rel="canonical" href="https://privacy.sabasetstudios.com/quietpalate/support.html">
+    <meta http-equiv="refresh" content="0; url=../quietpalate/support.html">
+    <style>
+      :root {
+        color-scheme: light;
+        --page: #f1eef8;
+        --paper: #fff9f2;
+        --ink: #20213f;
+        --muted: #626278;
+        --line: #dedce8;
+        --indigo: #4d4fb3;
+        --deep-indigo: #30317a;
+        --coral: #f0645a;
+        --lilac: #e3dfff;
+        --mint: #ddf3e9;
+        --apricot: #ffe9b4;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at 10% 0%, rgba(168, 167, 255, 0.24), transparent 34rem),
+          var(--page);
+        color: var(--ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.65;
+      }
+
+      .skip-link {
+        position: absolute;
+        left: 16px;
+        top: -80px;
+        z-index: 2;
+        border-radius: 10px;
+        background: var(--deep-indigo);
+        color: #fff;
+        padding: 10px 14px;
+      }
+
+      .skip-link:focus { top: 16px; }
+
+      .wrap {
+        width: min(920px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 48px 0;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: var(--paper);
+        padding: clamp(26px, 6vw, 60px);
+        box-shadow: 0 18px 45px rgba(48, 49, 122, 0.10);
+      }
+
+      nav { margin-bottom: 30px; }
+      nav a + a { margin-left: 18px; }
+
+      h1, h2, h3 { line-height: 1.18; }
+
+      h1 {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2.5rem, 8vw, 5rem);
+        font-weight: 500;
+        letter-spacing: -0.03em;
+      }
+
+      h2 {
+        margin: 42px 0 0;
+        padding-top: 28px;
+        border-top: 1px solid var(--line);
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(1.45rem, 4vw, 2rem);
+        font-weight: 500;
+      }
+
+      h3 { margin: 24px 0 0; font-size: 1.08rem; }
+      p, ul { font-size: 1rem; }
+      p { margin: 12px 0 0; }
+      ul { margin: 12px 0 0; padding-left: 1.4rem; }
+      li + li { margin-top: 7px; }
+
+      .eyebrow {
+        margin: 0 0 14px;
+        color: var(--indigo);
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+      }
+
+      .lede { max-width: 690px; color: var(--muted); font-size: 1.12rem; }
+
+      .callout {
+        margin-top: 24px;
+        border-left: 5px solid var(--coral);
+        border-radius: 14px;
+        background: var(--apricot);
+        padding: 17px 19px;
+      }
+
+      .boundary {
+        margin-top: 18px;
+        border-radius: 16px;
+        background: var(--mint);
+        padding: 18px 20px;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .button {
+        display: inline-flex;
+        min-height: 46px;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--indigo);
+        border-radius: 14px;
+        background: var(--lilac);
+        padding: 10px 15px;
+        color: var(--deep-indigo);
+        font: inherit;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .button.primary { background: var(--indigo); color: #fff; }
+
+      textarea {
+        width: 100%;
+        min-height: 390px;
+        margin-top: 14px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fffefb;
+        color: var(--ink);
+        font: 0.94rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        line-height: 1.5;
+        padding: 16px;
+        resize: vertical;
+      }
+
+      .status { min-height: 1.5em; color: var(--muted); font-size: 0.95rem; }
+
+      a { color: var(--deep-indigo); text-underline-offset: 3px; }
+
+      button:focus-visible, a:focus-visible, textarea:focus-visible {
+        outline: 3px solid var(--coral);
+        outline-offset: 3px;
+      }
+
+      footer {
+        margin-top: 42px;
+        padding-top: 22px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      @media (max-width: 640px) {
+        .wrap { padding: 16px 0; }
+        .card { border-radius: 18px; }
+        .button { width: 100%; }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <main class="wrap" id="main">
+      <article class="card">
+        <nav aria-label="QuietPalate pages">
+          <a href="./">QuietPalate</a>
+          <a href="privacy.html">Privacy</a>
+        </nav>
+
+        <p class="eyebrow">Sabaset Studios LLC</p>
+        <h1>QuietPalate Support</h1>
+        <p class="lede">
+          For app problems, ingredient-label recognition issues, evidence-display corrections,
+          accessibility concerns, or privacy questions, email
+          <a href="mailto:gregk@sabasetstudios.com">gregk@sabasetstudios.com</a>.
+        </p>
+
+        <div class="callout">
+          <strong>Please leave private health details out.</strong> You do not need to send a photo
+          of your mouth or a lesion, a medical or dental record, or your full health history to
+          report an app, label, or evidence problem.
+        </div>
+
+        <h2>Send a report</h2>
+        <p>
+          Choose the option that works best for you. The report template asks only for details
+          that help reproduce or correct the issue.
+        </p>
+
+        <div class="actions">
+          <a class="button primary" id="email-link" href="mailto:gregk@sabasetstudios.com?subject=QuietPalate%20support%20request">Use Default Email App</a>
+          <a class="button" id="gmail-link" href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=gregk@sabasetstudios.com&amp;su=QuietPalate%20support%20request">Open Gmail Draft</a>
+          <button class="button" id="copy-template" type="button">Copy Report Template</button>
+        </div>
+        <p class="status" id="copy-status" aria-live="polite"></p>
+
+        <h2>Report template</h2>
+        <textarea id="report-template" aria-label="QuietPalate support report template" readonly>QuietPalate support request
+
+What were you trying to do?
+
+
+What happened?
+
+
+What did you expect?
+
+
+Can you reproduce it?
+
+
+Where did it happen? (Check / Review / Result / Saved / Record / Settings):
+Exact ingredient wording, if relevant:
+Product country or region, if known:
+
+Device:
+Operating system:
+App version:
+Screenshot attached?:</textarea>
+
+        <h2>Helpful details</h2>
+        <ul>
+          <li>the steps that led to the problem</li>
+          <li>what the app showed and what you expected instead</li>
+          <li>the exact printed ingredient wording for a label or evidence issue</li>
+          <li>the product country or region, if known</li>
+          <li>your device, operating-system version, and QuietPalate app version</li>
+          <li>a screenshot only if it helps and contains no private health information</li>
+        </ul>
+
+        <h2>What support can address</h2>
+        <h3>App or accessibility problems</h3>
+        <p>Crashes, controls that do not work, unreadable layouts, and screen-reader barriers.</p>
+
+        <h3>Label recognition</h3>
+        <p>
+          Missed, split, or incorrectly matched ingredient wording. Please include the exact words
+          printed on the package rather than an interpretation of them.
+        </p>
+
+        <h3>Evidence or source corrections</h3>
+        <p>
+          A broken source link, wording that does not match a cited source, or a finding you think
+          should be reviewed. A source link or citation is helpful when available.
+        </p>
+
+        <div class="boundary">
+          <h3>What support cannot do</h3>
+          <p>
+            App support cannot diagnose a mouth change, interpret symptoms or lesion photos, or
+            advise you to start, stop, or change a medicine or dental work. Those questions need
+            the relevant clinician.
+          </p>
+          <p>
+            For sudden trouble breathing or swallowing, throat tightness, fainting, or collapse,
+            call your local emergency number now.
+          </p>
+        </div>
+
+        <h2>Privacy</h2>
+        <p>
+          Read the QuietPalate Privacy Policy at
+          <a href="https://privacy.sabasetstudios.com/quietpalate/privacy.html">https://privacy.sabasetstudios.com/quietpalate/privacy.html</a>.
+          Sending an email shares the details you choose to include with your email provider and
+          ours. When this page is opened from the app, the app version and operating-system
+          description are included in the page URL to prefill the report template; the hosting
+          provider receives that requested URL. Please review the privacy notice before attaching
+          anything.
+        </p>
+
+        <footer>
+          QuietPalate is a development candidate, not a diagnostic service. Support and
+          privacy page last updated August 11, 2026.
+        </footer>
+      </article>
+    </main>
+
+    <script>
+      const supportEmail = "gregk@sabasetstudios.com";
+      const subject = "QuietPalate support request";
+      const params = new URLSearchParams(window.location.search);
+      const appVersion = params.get("appVersion") || "";
+      const platform = params.get("platform") || "";
+      const template = `QuietPalate support request
+
+What were you trying to do?
+
+
+What happened?
+
+
+What did you expect?
+
+
+Can you reproduce it?
+
+
+Where did it happen? (Check / Review / Result / Saved / Record / Settings):
+Exact ingredient wording, if relevant:
+Product country or region, if known:
+
+Device:
+Operating system: ${platform}
+App version: ${appVersion}
+Screenshot attached?:`;
+
+      const templateField = document.getElementById("report-template");
+      const gmailLink = document.getElementById("gmail-link");
+      const emailLink = document.getElementById("email-link");
+      const copyButton = document.getElementById("copy-template");
+      const copyStatus = document.getElementById("copy-status");
+
+      templateField.value = template;
+      gmailLink.href = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(supportEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(template)}`;
+      emailLink.href = `mailto:${supportEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(template)}`;
+
+      copyButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(template);
+          copyStatus.textContent = "Copied. Paste this into your preferred email service.";
+        } catch {
+          templateField.focus();
+          templateField.select();
+          copyStatus.textContent = "Select the template text and copy it manually.";
+        }
+      });
+    </script>
+  </body>
+</html>

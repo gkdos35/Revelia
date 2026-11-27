@@ -13,7 +13,8 @@
   --lilac: #e3dfff;
   --mint: #ddf3e9;
   --apricot: #ffe9b4;
-  --measure: 68ch;
+  --measure: 50ch;
+  --small: 0.94rem;
 }
 
 * { box-sizing: border-box; }
@@ -28,7 +29,7 @@ body {
   color: var(--ink);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 1.0625rem;
-  line-height: 1.65;
+  line-height: 1.55;
 }
 
 .skip-link {
@@ -45,10 +46,13 @@ body {
 .skip-link:focus { top: 16px; }
 
 .wrap {
-  width: min(880px, calc(100% - 32px));
+  width: min(760px, calc(100% - 32px));
   margin: 0 auto;
   padding: 48px 0;
 }
+
+/* The front page's three panels need the wider page; its text keeps the measure. */
+.wrap:has(.grid) { width: min(880px, calc(100% - 32px)); }
 
 .card {
   border: 1px solid var(--line);
@@ -67,7 +71,6 @@ nav.site {
   margin-bottom: 30px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--line);
-  font-size: 0.98rem;
 }
 
 nav.site .brand {
@@ -110,9 +113,10 @@ h2 {
   scroll-margin-top: 16px;
 }
 
-h3 { margin: 24px 0 0; font-size: 1.08rem; }
+h3 { margin: 24px 0 0; font-size: 1.125rem; }
 
 p, ul, ol { max-width: var(--measure); margin: 13px 0 0; }
+p, li, .summary div { overflow-wrap: anywhere; }
 ul, ol { padding-left: 1.4rem; }
 li + li { margin-top: 7px; }
 
@@ -125,24 +129,20 @@ li + li { margin-top: 7px; }
   text-transform: uppercase;
 }
 
-.lede { color: var(--muted); font-size: 1.14rem; }
-.effective { margin-top: 10px; color: var(--muted); font-size: 0.98rem; }
+.lede { font-size: 1.125rem; }
+.effective { margin-top: 10px; color: var(--muted); font-size: var(--small); }
 
 /* A few facts side by side. */
 .summary {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  margin-top: 26px;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: var(--line);
+  gap: 0 28px;
+  margin-top: 28px;
 }
 
-.summary div { background: #fff; padding: 16px 18px; }
+.summary div { border-top: 1px solid var(--line); padding: 14px 0 12px; line-height: 1.4; }
 .summary strong { display: block; }
-.summary span { color: var(--muted); font-size: 0.95rem; }
+.summary span { display: block; margin-top: 4px; font-size: 1rem; }
 
 /* The short version of a long page. */
 .plain {
@@ -152,17 +152,11 @@ li + li { margin-top: 7px; }
   padding: 18px 22px 20px;
 }
 
-.plain strong { font-size: 1.02rem; }
+.plain strong { font-size: inherit; }
 .plain ul { margin-top: 8px; }
 
 /* Where the sections of a long page are. */
-.toc {
-  margin-top: 24px;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: #fff;
-  padding: 16px 22px 18px;
-}
+.toc { margin-top: 28px; }
 
 .toc strong { display: block; }
 .toc ol {
@@ -171,7 +165,6 @@ li + li { margin-top: 7px; }
   max-width: none;
   margin-top: 8px;
   padding-left: 1.5rem;
-  font-size: 0.98rem;
 }
 
 .toc li { break-inside: avoid; }
@@ -256,7 +249,7 @@ textarea {
   resize: vertical;
 }
 
-.status { min-height: 1.5em; color: var(--muted); font-size: 0.95rem; }
+.status { min-height: 1.5em; color: var(--muted); font-size: var(--small); }
 
 a { color: var(--deep-indigo); text-underline-offset: 3px; }
 
@@ -270,19 +263,19 @@ footer {
   padding-top: 22px;
   border-top: 1px solid var(--line);
   color: var(--muted);
-  font-size: 0.94rem;
+  font-size: var(--small);
 }
 
 footer p { max-width: none; margin: 0; }
 footer p + p { margin-top: 6px; }
 
 @media (max-width: 700px) {
-  body { font-size: 1rem; }
-  .wrap { padding: 16px 0; }
-  .card { border-radius: 18px; }
+  body { font-size: 1rem; background: var(--paper); }
+  .wrap { width: 100%; padding: 0; }
+  .card { border: 0; border-radius: 0; box-shadow: none; padding: 8px 20px 32px; }
   .summary, .grid { grid-template-columns: 1fr; }
   .toc ol { columns: 1; }
-  nav.site { gap: 0 15px; font-size: 0.94rem; }
+  nav.site { gap: 0 15px; }
   nav.site .brand { flex-basis: 100%; }
 }
 
